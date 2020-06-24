@@ -92,6 +92,11 @@ def get_random_model(up_lim=12, bottom_lim=1):
         neurs.append(get_random_neurons())
     return create_model(neurs, acts)
 
+def plot_png_network(model):
+    plot_model(
+        model, to_file='model.png', show_shapes=True, show_layer_names=True,
+        rankdir='LR', expand_nested=True, dpi=96
+    )
 
 def main():
     arp = argparse.ArgumentParser()
@@ -116,11 +121,7 @@ def main():
     x_plot, y_plot = inv_trans(x, y, scale_x, scale_y)
     yhat_plot = scale_y.inverse_transform(yhat)
     # report model error
-    plot_model(
-        model, to_file='model.png', show_shapes=True, show_layer_names=True,
-        rankdir='LR', expand_nested=True, dpi=96
-    )
-
+    plot_png_network(model)
     print('MSE: %.3f' % mean_squared_error(y_plot, yhat_plot))
     # plot x vs y
     pyplot.scatter(x_plot, y_plot, label='Actual')

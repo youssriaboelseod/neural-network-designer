@@ -1,4 +1,5 @@
 import argparse
+import copy
 import random
 
 import matplotlib.pyplot as plt
@@ -84,6 +85,13 @@ def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_
     return model
 
 
+def mutate_neurons_quantity(neurs, bot=2, up=128):
+    new_neurs = copy.deepcopy(neurs)
+    ind = random.randint(0, len(neurs) - 1)
+    new_neurs[ind] = random.randint(bot, up)
+    return new_neurs
+
+
 def get_random_model(up_lim=12, bottom_lim=1):
     layers_no = random.randint(bottom_lim, up_lim)
     acts, neurs = [], []
@@ -92,11 +100,13 @@ def get_random_model(up_lim=12, bottom_lim=1):
         neurs.append(get_random_neurons())
     return create_model(neurs, acts)
 
+
 def plot_png_network(model):
     plot_model(
         model, to_file='model.png', show_shapes=True, show_layer_names=True,
         rankdir='LR', expand_nested=True, dpi=96
     )
+
 
 def main():
     arp = argparse.ArgumentParser()

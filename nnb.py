@@ -64,9 +64,12 @@ def inv_trans(x, y, scale_x, scale_y):
     return scale_x.inverse_transform(x), scale_y.inverse_transform(y)
 
 
+def get_activations():
+    return ['sigmoid', 'relu', 'tanh']  # , 'elu', 'selu', 'softmax', 'softplus']
+
+
 def get_activation_random():
-    activations_str_list = ['sigmoid', 'relu', 'tanh']  # , 'elu', 'selu', 'softmax', 'softplus']
-    return random.choice(activations_str_list)
+    return random.choice(get_activations())
 
 
 def get_random_neurons(bottom_limit=2, upper_limit=128):
@@ -85,11 +88,18 @@ def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_
     return model
 
 
-def mutate_neurons_quantity(neurs, bot=2, up=128):
+def mutate_layer_neurons(neurs):
     new_neurs = copy.deepcopy(neurs)
     ind = random.randint(0, len(neurs) - 1)
-    new_neurs[ind] = random.randint(bot, up)
+    new_neurs[ind] = get_random_neurons()
     return new_neurs
+
+
+def mutate_layer_activation(acts):
+    new_acts = copy.deepcopy(acts)
+    ind = random.randint(0, len(acts) - 1)
+    new_acts[ind] = get_activation_random()
+    return new_acts
 
 
 def get_random_model(up_lim=12, bottom_lim=1):

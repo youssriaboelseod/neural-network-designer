@@ -102,6 +102,15 @@ def mutate_layer_activation(acts):
     return new_acts
 
 
+def delete_random_layer(neurs, acts):
+    new_neurs = copy.deepcopy(neurs)
+    new_acts = copy.deepcopy(acts)
+    ind = random.randint(0, len(acts) - 1)
+    del new_neurs[ind]
+    del new_acts[ind]
+    return new_neurs, new_acts
+
+
 def get_random_model(up_lim=12, bottom_lim=1):
     layers_no = random.randint(bottom_lim, up_lim)
     acts, neurs = [], []

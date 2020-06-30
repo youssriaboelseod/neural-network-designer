@@ -1,8 +1,8 @@
 import argparse
 import copy
 import random
+import time
 
-import matplotlib.pyplot as plt
 import numpy as np
 from matplotlib import pyplot
 from sklearn.metrics import mean_squared_error
@@ -13,23 +13,27 @@ from tensorflow.python.keras.layers import Dense
 from vis.utils.utils import apply_modifications
 
 
+def acceptance_probability(cost, new_cost, temp):
+    if new_cost < cost:
+        return 1
+    else:
+        p = np.exp(- (new_cost - cost) / temp)
+        return p
+
+
 def update_layer_activation(model, activation, index=-1):
     model.layers[index].activation = activation
     return apply_modifications(model)
 
 
-def plot_(x, y, scx, scy, model):
-    yhat = model.predict(x)
-    x_plot = scx.inverse_transform(x)
-    y_plot = scy.inverse_transform(y)
-    yhat_plot = scy.inverse_transform(yhat)
-    plt.scatter(x_plot, y_plot, label='Actual', s=90)
-    plt.scatter(x_plot, yhat_plot, label='Predicted', edgecolors='black')
-    plt.title('Input (x) versus Output (y)')
-    plt.xlabel('Input Variable (x)')
-    plt.ylabel('Output Variable (y)')
-    plt.legend()
-    plt.show()
+def draw_graph(x_plot, y_plot, yhat_plot):
+    pyplot.scatter(x_plot, y_plot, label='Actual')
+    pyplot.scatter(x_plot, yhat_plot, label='Predicted')
+    pyplot.title('Input (x) versus Output (y)')
+    pyplot.xlabel('Input Variable (x)')
+    pyplot.ylabel('Output Variable (y)')
+    pyplot.legend()
+    pyplot.show()
 
 
 def get_data(parsed_args):
@@ -111,13 +115,37 @@ def delete_random_layer(neurs, acts):
     return new_neurs, new_acts
 
 
-def get_random_model(up_lim=12, bottom_lim=1):
+def insert_random_layer(neurs, acts):
+    new_neurs = copy.deepcopy(neurs)
+    new_acts = copy.deepcopy(acts)
+    ind = random.randint(0, len(acts) - 1)
+    new_neurs.insert(ind, get_random_neurons())
+    new_acts.insert(ind, get_activation_random())
+    return new_neurs, new_acts
+
+
+def random_mutation(acts, neurs):
+    dec = random.uniform(0, 1)
+    new_neurs = copy.deepcopy(neurs)
+    new_acts = copy.deepcopy(acts)
+    if dec < 1 / 4:
+        new_neurs, new_acts = insert_random_layer(neurs, acts)
+    elif 1 / 4 < dec < 1 / 2:
+        new_neurs, new_acts = delete_random_layer(neurs, acts)
+    elif 1 / 2 < dec < 3 / 4:
+        new_acts = mutate_layer_activation(acts)
+    else:
+        new_neurs = mutate_layer_neurons(neurs)
+    return new_neurs, new_acts
+
+
+def get_random_model_scheme(up_lim=12, bottom_lim=1):
     layers_no = random.randint(bottom_lim, up_lim)
     acts, neurs = [], []
     for _ in range(layers_no):
         acts.append(get_activation_random())
         neurs.append(get_random_neurons())
-    return create_model(neurs, acts)
+    return neurs, acts
 
 
 def plot_png_network(model):
@@ -127,40 +155,75 @@ def plot_png_network(model):
     )
 
 
+def get_millis(t):
+    return t * 1000
+
+
+def get_time():
+    return int(round(get_millis(time.time())))
+
+
+def model_prepare(model, x, y):
+    model.compile(loss='mse', optimizer='adam')
+    model.fit(x, y, epochs=300, batch_size=10, verbose=0)
+
+
+def predict_y(model, x, y, scale_x, scale_y):
+    yhat = model.predict(x)
+    x_plot, y_plot = inv_trans(x, y, scale_x, scale_y)
+    yhat_plot = scale_y.inverse_transform(yhat)
+    return yhat_plot, x_plot, y_plot
+
+
+def simulated_annealing(t, args, T0=1000, scale=0.8, save_structure=True, graph=True):
+    end_time = get_time() + get_millis(t)
+    T = T0
+
+    x, y = get_data(args)
+    x, y = reshape(x, y)
+    scale_x, scale_y = scale_data(x, y, args.expression)
+    x, y = fit_trans(x, y, scale_x, scale_y)
+
+    neurs, acts = get_random_model_scheme()
+    model = create_model(neurs, acts)
+    model_prepare(model, x, y)
+    yhat_plot, x_plot, y_plot = predict_y(model, x, y, scale_x, scale_y)
+    mse = mean_squared_error(y_plot, yhat_plot)
+
+    plot_png_network(model)
+    draw_graph(x_plot, y_plot, yhat_plot)
+
+    print(mse)
+    best_mse = mse
+    best_pair = (neurs, acts)
+    best_model = model
+    while get_time() <= end_time and T > 0:
+        T *= scale
+        new_neurs, new_acts = random_mutation(acts, neurs)
+        new_model = create_model(new_neurs, new_acts)
+        model_prepare(new_model, x, y)
+        yhat_plot, x_plot, y_plot = predict_y(new_model, x, y, scale_x, scale_y)
+        mse = mean_squared_error(y_plot, yhat_plot)
+        if acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
+            best_mse = mse
+            print(best_mse)
+            draw_graph(x_plot, y_plot, yhat_plot)
+            best_pair = (new_neurs, new_acts)
+            best_model = new_model
+    if save_structure:
+        plot_png_network(model)
+    if graph:
+        draw_graph(x_plot, y_plot, yhat_plot)
+    return best_mse
+
+
 def main():
     arp = argparse.ArgumentParser()
     arp.add_argument('expression', type=str)
     arp.add_argument('--linspace', type=str)
     arp.add_argument('-plot', action='store_true')
     p = arp.parse_args()
-    x, y = get_data(p)
-    print(x, y)
-    x, y = reshape(x, y)
-    scale_x, scale_y = scale_data(x, y, p.expression)
-    x, y = fit_trans(x, y, scale_x, scale_y)
-    print(x.min(), x.max(), y.min(), y.max())
-    model = get_random_model()
-    # define the loss function and optimization algorithm
-    model.compile(loss='mse', optimizer='adam')
-    # ft the model on the training dataset
-    model.fit(x, y, epochs=500, batch_size=10, verbose=0)
-    # make predictions for the input data
-    yhat = model.predict(x)
-    # inverse transforms
-    x_plot, y_plot = inv_trans(x, y, scale_x, scale_y)
-    yhat_plot = scale_y.inverse_transform(yhat)
-    # report model error
-    plot_png_network(model)
-    print('MSE: %.3f' % mean_squared_error(y_plot, yhat_plot))
-    # plot x vs y
-    pyplot.scatter(x_plot, y_plot, label='Actual')
-    # plot x vs yhat
-    pyplot.scatter(x_plot, yhat_plot, label='Predicted')
-    pyplot.title('Input (x) versus Output (y)')
-    pyplot.xlabel('Input Variable (x)')
-    pyplot.ylabel('Output Variable (y)')
-    pyplot.legend()
-    pyplot.show()
+    simulated_annealing(15, p)
 
 
 main()

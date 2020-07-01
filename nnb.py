@@ -10,27 +10,25 @@ from sklearn.preprocessing import MinMaxScaler
 from tensorflow.keras.utils import plot_model
 from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.layers import Dense
-from vis.utils.utils import apply_modifications
 
 
 def acceptance_probability(cost, new_cost, temp):
-    if new_cost < cost:
-        return 1
-    else:
-        p = np.exp(- (new_cost - cost) / temp)
-        return p
+    return 1 if new_cost < cost else np.exp(- (new_cost - cost) / temp)
 
 
-def update_layer_activation(model, activation, index=-1):
-    model.layers[index].activation = activation
-    return apply_modifications(model)
-
-
-def draw_graph(x_plot, y_plot, yhat_plot):
+def draw_graph(x_plot, y_plot, yhat_plot, mse):
+    """
+    Method responsible for drawing plot.
+    :param x_plot:
+    :param y_plot:
+    :param yhat_plot:
+    :param mse:
+    :return:
+    """
     pyplot.scatter(x_plot, y_plot, label='Actual')
     pyplot.scatter(x_plot, yhat_plot, label='Predicted')
-    pyplot.title('Input (x) versus Output (y)')
-    pyplot.xlabel('Input Variable (x)')
+    pyplot.title('MSE: %.3f' % mse)
+    pyplot.xlabel('Input Variable (x) ')
     pyplot.ylabel('Output Variable (y)')
     pyplot.legend()
     pyplot.show()
@@ -48,39 +46,86 @@ def get_data(parsed_args):
     return x, eval(parsed_args.expression)
 
 
-def scale_data(x, y, expr):
-    # if any(['sin', 'cos']) in expr:
-    #    print(expr)
-    # learn to use mean sometimes we have nan so we changing it to means.
+def scale_data():
+    """
+    Method scale data using MinMaxScaler
+    :return:
+    """
     scale_x, scale_y = MinMaxScaler(), MinMaxScaler()
     return scale_x, scale_y
 
 
 def reshape(x, y):
+    """
+    Reshape vector x,y to nx1
+    :param x:
+    :param y:
+    :return:
+    """
     return x.reshape((len(x), 1)), y.reshape((len(y), 1))
 
 
 def fit_trans(x, y, scale_x, scale_y):
+    """
+    Fit scalex,scaley to x,y
+    :param x:
+    :param y:
+    :param scale_x:
+    :param scale_y:
+    :return:
+    """
     return scale_x.fit_transform(x), scale_y.fit_transform(y)
 
 
 def inv_trans(x, y, scale_x, scale_y):
+    """
+    Transform scale to normal vecs
+    :param x:
+    :param y:
+    :param scale_x:
+    :param scale_y:
+    :return:
+    """
     return scale_x.inverse_transform(x), scale_y.inverse_transform(y)
 
 
 def get_activations():
-    return ['sigmoid', 'relu', 'tanh']  # , 'elu', 'selu', 'softmax', 'softplus']
+    """
+    List of possible activations =
+    opened for extension.
+    :return:
+    """
+    return ['sigmoid', 'relu', 'tanh', 'elu', 'selu', 'softmax', 'softplus']
 
 
 def get_activation_random():
+    """
+    Random activation for layer.
+    :return:
+    """
     return random.choice(get_activations())
 
 
 def get_random_neurons(bottom_limit=2, upper_limit=128):
+    """
+    Random number of neurons from bottom_limit to upper_limit
+    :param bottom_limit: - lower limit
+    :param upper_limit:
+    :return:
+    """
     return random.randint(bottom_limit, upper_limit)
 
 
 def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_dim=1, out_dim=1):
+    """
+    Creates model based on given lists of activations and neurons
+    :param neurons_quantity_list: - neurons qunatity for each layer
+    :param activations_list:  - 
+    :param krnl:
+    :param in_dim:
+    :param out_dim:
+    :return:
+    """
     if len(neurons_quantity_list) != len(activations_list):
         raise IndexError('')
     model = Sequential()
@@ -95,6 +140,7 @@ def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_
 def mutate_layer_neurons(neurs):
     new_neurs = copy.deepcopy(neurs)
     ind = random.randint(0, len(neurs) - 1)
+    print(ind)
     new_neurs[ind] = get_random_neurons()
     return new_neurs
 
@@ -139,7 +185,7 @@ def random_mutation(acts, neurs):
     return new_neurs, new_acts
 
 
-def get_random_model_scheme(up_lim=12, bottom_lim=1):
+def get_random_model_scheme(up_lim=25, bottom_lim=1):
     layers_no = random.randint(bottom_lim, up_lim)
     acts, neurs = [], []
     for _ in range(layers_no):
@@ -181,7 +227,7 @@ def simulated_annealing(t, args, T0=1000, scale=0.8, save_structure=True, graph=
 
     x, y = get_data(args)
     x, y = reshape(x, y)
-    scale_x, scale_y = scale_data(x, y, args.expression)
+    scale_x, scale_y = scale_data()
     x, y = fit_trans(x, y, scale_x, scale_y)
 
     neurs, acts = get_random_model_scheme()
@@ -191,7 +237,7 @@ def simulated_annealing(t, args, T0=1000, scale=0.8, save_structure=True, graph=
     mse = mean_squared_error(y_plot, yhat_plot)
 
     plot_png_network(model)
-    draw_graph(x_plot, y_plot, yhat_plot)
+    draw_graph(x_plot, y_plot, yhat_plot, mse)
 
     print(mse)
     best_mse = mse
@@ -199,21 +245,21 @@ def simulated_annealing(t, args, T0=1000, scale=0.8, save_structure=True, graph=
     best_model = model
     while get_time() <= end_time and T > 0:
         T *= scale
-        new_neurs, new_acts = random_mutation(acts, neurs)
-        new_model = create_model(new_neurs, new_acts)
+        neurs, acts = random_mutation(acts, neurs)
+        new_model = create_model(neurs, acts)
         model_prepare(new_model, x, y)
         yhat_plot, x_plot, y_plot = predict_y(new_model, x, y, scale_x, scale_y)
         mse = mean_squared_error(y_plot, yhat_plot)
         if acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
             best_mse = mse
             print(best_mse)
-            draw_graph(x_plot, y_plot, yhat_plot)
-            best_pair = (new_neurs, new_acts)
+            draw_graph(x_plot, y_plot, yhat_plot, best_mse)
+            # best_pair = (new_neurs, new_acts)
             best_model = new_model
     if save_structure:
-        plot_png_network(model)
+        plot_png_network(best_model)
     if graph:
-        draw_graph(x_plot, y_plot, yhat_plot)
+        draw_graph(x_plot, y_plot, yhat_plot, best_mse)
     return best_mse
 
 
@@ -223,7 +269,7 @@ def main():
     arp.add_argument('--linspace', type=str)
     arp.add_argument('-plot', action='store_true')
     p = arp.parse_args()
-    simulated_annealing(15, p)
+    simulated_annealing(35, p)
 
 
 main()

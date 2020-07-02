@@ -12,7 +12,22 @@ from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.layers import Dense
 
 
+def get_millis(t):
+    return t * 1000
+
+
+def get_time():
+    return int(round(get_millis(time.time())))
+
+
 def acceptance_probability(cost, new_cost, temp):
+    """
+    Decide if we move to new soultion.
+    :param cost:
+    :param new_cost:
+    :param temp:
+    :return:
+    """
     return 1 if new_cost < cost else np.exp(- (new_cost - cost) / temp)
 
 
@@ -120,14 +135,16 @@ def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_
     """
     Creates model based on given lists of activations and neurons
     :param neurons_quantity_list: - neurons qunatity for each layer
-    :param activations_list:  - 
-    :param krnl:
-    :param in_dim:
-    :param out_dim:
+    :param activations_list:  activation func for each later
+    :param krnl: kernel initializer
+    :param in_dim: input dismension
+    :param out_dim: output dismensin
     :return:
     """
+    print(neurons_quantity_list)
+    print(activations_list)
     if len(neurons_quantity_list) != len(activations_list):
-        raise IndexError('')
+        raise IndexError('Here is error')
     model = Sequential()
     model.add(Dense(neurons_quantity_list[0], input_dim=in_dim, activation=activations_list[0],
                     kernel_initializer=krnl))
@@ -138,14 +155,23 @@ def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_
 
 
 def mutate_layer_neurons(neurs):
+    """
+    Mutation by changing quantity of neurons in random layer
+    :param neurs:
+    :return:
+    """
     new_neurs = copy.deepcopy(neurs)
     ind = random.randint(0, len(neurs) - 1)
-    print(ind)
     new_neurs[ind] = get_random_neurons()
     return new_neurs
 
 
 def mutate_layer_activation(acts):
+    """
+    Mutation by changing activation function in random layer
+    :param acts:
+    :return:
+    """
     new_acts = copy.deepcopy(acts)
     ind = random.randint(0, len(acts) - 1)
     new_acts[ind] = get_activation_random()
@@ -153,6 +179,12 @@ def mutate_layer_activation(acts):
 
 
 def delete_random_layer(neurs, acts):
+    """
+    Mutation by deleting random layer
+    :param neurs:
+    :param acts:
+    :return:
+    """
     new_neurs = copy.deepcopy(neurs)
     new_acts = copy.deepcopy(acts)
     ind = random.randint(0, len(acts) - 1)
@@ -162,6 +194,12 @@ def delete_random_layer(neurs, acts):
 
 
 def insert_random_layer(neurs, acts):
+    """
+    Mutation by inserting random layer
+    :param neurs:
+    :param acts:
+    :return:
+    """
     new_neurs = copy.deepcopy(neurs)
     new_acts = copy.deepcopy(acts)
     ind = random.randint(0, len(acts) - 1)
@@ -171,6 +209,12 @@ def insert_random_layer(neurs, acts):
 
 
 def random_mutation(acts, neurs):
+    """
+    Randomly choosing mutation
+    :param acts:
+    :param neurs:
+    :return:
+    """
     dec = random.uniform(0, 1)
     new_neurs = copy.deepcopy(neurs)
     new_acts = copy.deepcopy(acts)
@@ -201,14 +245,6 @@ def plot_png_network(model):
     )
 
 
-def get_millis(t):
-    return t * 1000
-
-
-def get_time():
-    return int(round(get_millis(time.time())))
-
-
 def model_prepare(model, x, y):
     model.compile(loss='mse', optimizer='adam')
     model.fit(x, y, epochs=300, batch_size=10, verbose=0)
@@ -221,14 +257,19 @@ def predict_y(model, x, y, scale_x, scale_y):
     return yhat_plot, x_plot, y_plot
 
 
-def simulated_annealing(t, args, T0=1000, scale=0.8, save_structure=True, graph=True):
-    end_time = get_time() + get_millis(t)
-    T = T0
-
+def preprocess_data(args):
     x, y = get_data(args)
     x, y = reshape(x, y)
     scale_x, scale_y = scale_data()
     x, y = fit_trans(x, y, scale_x, scale_y)
+    return x, y, scale_x, scale_y
+
+
+def simulated_annealing(t, args, T0=1000, scale=0.8, save_structure=True, graph=True):
+    end_time = get_time() + get_millis(t)
+    T = T0
+
+    x, y, scale_x, scale_y = preprocess_data(args)
 
     neurs, acts = get_random_model_scheme()
     model = create_model(neurs, acts)
@@ -241,8 +282,8 @@ def simulated_annealing(t, args, T0=1000, scale=0.8, save_structure=True, graph=
 
     print(mse)
     best_mse = mse
-    best_pair = (neurs, acts)
     best_model = model
+    best_yhat = yhat_plot
     while get_time() <= end_time and T > 0:
         T *= scale
         neurs, acts = random_mutation(acts, neurs)
@@ -253,13 +294,13 @@ def simulated_annealing(t, args, T0=1000, scale=0.8, save_structure=True, graph=
         if acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
             best_mse = mse
             print(best_mse)
+            best_yhat = yhat_plot
             draw_graph(x_plot, y_plot, yhat_plot, best_mse)
-            # best_pair = (new_neurs, new_acts)
             best_model = new_model
     if save_structure:
         plot_png_network(best_model)
     if graph:
-        draw_graph(x_plot, y_plot, yhat_plot, best_mse)
+        draw_graph(x_plot, y_plot, best_yhat, best_mse)
     return best_mse
 
 

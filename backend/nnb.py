@@ -20,21 +20,23 @@ def get_time():
     return int(round(get_millis(time.time())))
 
 
+def acceptance_probability(cost, new_cost, temp):
+    """
+    Decide if we move to new soultion.
+    :param cost:
+    :param new_cost:
+    :param temp:
+    :return:
+    """
+    return 1 if new_cost < cost else np.exp(- (new_cost - cost) / temp)
+
+
 class NeuralNetworkDesigner:
     def __init__(self, epochs=300, initial_temperature=1000, scale=0.8):
         self.epochs = epochs
         self.initial_temperature = initial_temperature
         self.scale = scale
 
-    def acceptance_probability(self, cost, new_cost, temp):
-        """
-        Decide if we move to new soultion.
-        :param cost:
-        :param new_cost:
-        :param temp:
-        :return:
-        """
-        return 1 if new_cost < cost else np.exp(- (new_cost - cost) / temp)
 
     def draw_graph(self, x_plot, y_plot, yhat_plot, mse):
         """
@@ -277,7 +279,7 @@ class NeuralNetworkDesigner:
             self.model_prepare(new_model, x, y)
             yhat_plot, x_plot, y_plot = self.predict_y(new_model, x, y, scale_x, scale_y)
             mse = mean_squared_error(y_plot, yhat_plot)
-            if self.acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
+            if acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
                 best_mse = mse
                 print(best_mse)
                 best_yhat = yhat_plot

@@ -42,3 +42,10 @@ def inv_trans(x, y, scale_x, scale_y):
     :return:
     """
     return scale_x.inverse_transform(x), scale_y.inverse_transform(y)
+
+def preprocess_data(args,func):
+    x, y = func(args)
+    x, y = reshape(x, y)
+    scale_x, scale_y = scale_data()
+    x, y = fit_trans(x, y, scale_x, scale_y)
+    return x, y, scale_x, scale_y

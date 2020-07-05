@@ -1,22 +1,11 @@
-import copy
-import random
-import time
-
 from sklearn.metrics import mean_squared_error
-from sklearn.preprocessing import MinMaxScaler
 from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.layers import Dense
 
-from backend.ModelEditor import *
-from backend.Tooling import *
-
-
-def get_millis(t):
-    return t * 1000
-
-
-def get_time():
-    return int(round(get_millis(time.time())))
+from backend.data_preprocessing import *
+from backend.model_editing import *
+from backend.neural_network_config import *
+from backend.tools import *
 
 
 def acceptance_probability(cost, new_cost, temp):
@@ -37,7 +26,6 @@ def get_random_model_scheme(up_lim=25, bottom_lim=1):
         acts.append(get_activation_random())
         neurs.append(get_random_neurons())
     return neurs, acts
-
 
 
 def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_dim=1, out_dim=1):
@@ -61,21 +49,6 @@ def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_
     return model
 
 
-def preprocess_data(args):
-    x, y = get_data(args)
-    x, y = reshape(x, y)
-    scale_x, scale_y = scale_data()
-    x, y = fit_trans(x, y, scale_x, scale_y)
-    return x, y, scale_x, scale_y
-
-
-def predict_y(model, x, y, scale_x, scale_y):
-    yhat = model.predict(x)
-    x_plot, y_plot = inv_trans(x, y, scale_x, scale_y)
-    yhat_plot = scale_y.inverse_transform(yhat)
-    return yhat_plot, x_plot, y_plot
-
-
 class NeuralNetworkDesigner:
     def __init__(self, all_neurons, all_activations, linspace, expression, epochs=300, initial_temperature=1000,
                  scale=0.8):
@@ -93,7 +66,13 @@ class NeuralNetworkDesigner:
         model.compile(loss='mse', optimizer='adam')
         model.fit(x, y, epochs=self.epochs, batch_size=10, verbose=0)
 
-    def simulated_annealing(self, t, args, save_structure=True, graph=True, resets=True):
+    def predict_y(self, model):
+        yhat = model.predict(self.x)
+        x_plot, y_plot = inv_trans(self.x, self.y, self.scale_x, self.scale_y)
+        yhat_plot = self.scale_y.inverse_transform(yhat)
+        return yhat_plot, x_plot, y_plot
+
+    def simulated_annealing(self, t, args, save_structure=True, graph=True, resets=True, step_limit=300000):
         end_time = get_time() + get_millis(t)
         T = self.initial_temperature
         scale = self.scale
@@ -101,7 +80,7 @@ class NeuralNetworkDesigner:
         neurs, acts = copy.deepcopy(self.layers_neurons), copy.deepcopy(self.layers_activations)
         model = create_model(neurs, acts)
         self.model_prepare(model, self.x, self.y)
-        yhat_plot, x_plot, y_plot = predict_y(model, self.x, self.y, self.scale_x, self.scale_y)
+        yhat_plot, x_plot, y_plot = self.predict_y(model)
         mse = mean_squared_error(y_plot, yhat_plot)
 
         plot_png_network(model)
@@ -110,19 +89,23 @@ class NeuralNetworkDesigner:
         best_mse = mse
         best_model = model
         best_yhat = yhat_plot
+        step = 0
         while get_time() <= end_time and T > 0:
             T *= scale
-            neurs, acts = random_mutation(acts, neurs)
+
+            neurs, acts = get_random_model_scheme() if resets and step % step_limit else random_mutation(acts, neurs)
             new_model = create_model(neurs, acts)
             self.model_prepare(new_model, self.x, self.y)
-            yhat_plot, x_plot, y_plot = predict_y(new_model, self.x, self.y, self.scale_x, self.scale_y)
+            yhat_plot, x_plot, y_plot = self.predict_y(new_model)
             mse = mean_squared_error(y_plot, yhat_plot)
+
             if acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
                 best_mse = mse
                 print(best_mse)
                 best_yhat = yhat_plot
                 draw_graph(x_plot, y_plot, yhat_plot, best_mse)
                 best_model = new_model
+            step += 1
         if save_structure:
             plot_png_network(best_model)
         if graph:

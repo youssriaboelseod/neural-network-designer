@@ -1,5 +1,8 @@
-import random
+import copy
+
 from backend.neural_network_config import *
+
+
 def mutate_layer_neurons(neurs):
     """
     Mutation by changing quantity of neurons in random layer

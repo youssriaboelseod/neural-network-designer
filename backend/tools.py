@@ -1,6 +1,17 @@
-from matplotlib import pyplot
+import time
+
 import numpy as np
+from matplotlib import pyplot
 from tensorflow.keras.utils import plot_model
+
+
+def get_millis(t):
+    return t * 1000
+
+
+def get_time():
+    return int(round(get_millis(time.time())))
+
 
 def plot_png_network(model):
     plot_model(
@@ -50,10 +61,3 @@ def get_data_direct(space, expr):
     lin = [int(x) for x in space[1:-1].split(',')]
     x = np.linspace(*lin)
     return x, eval(expr)
-
-def preprocess_data(args):
-    x, y = get_data(args)
-    x, y = reshape(x, y)
-    scale_x, scale_y = scale_data()
-    x, y = fit_trans(x, y, scale_x, scale_y)
-    return x, y, scale_x, scale_y

@@ -1,10 +1,11 @@
-from backend.nnb import *
-from backend.tools import *
 import argparse
 
+from backend.nnb import *
+
+
 def main():
-    neurs, acts = get_random_model_scheme()
-    nnb = NeuralNetworkDesigner(neurs, acts, str((-50, 50, 25)), 'x**3-x**2+5*x')
+    neurons, acts = get_random_model_scheme()
+    nnb = NeuralNetworkDesigner(neurons, acts, str((-50, 50, 25)), 'x**3-x**2+5*x')
     arp = argparse.ArgumentParser()
     arp.add_argument('expression', type=str)
     arp.add_argument('--linspace', type=str)

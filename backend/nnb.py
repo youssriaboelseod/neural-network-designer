@@ -20,12 +20,18 @@ def acceptance_probability(cost, new_cost, temp):
 
 
 def get_random_model_scheme(up_lim=25, bottom_lim=1):
+    """
+
+    :param up_lim: Build random scheme
+    :param bottom_lim:
+    :return:
+    """
     layers_no = random.randint(bottom_lim, up_lim)
-    acts, neurs = [], []
+    acts, neurons = [], []
     for _ in range(layers_no):
         acts.append(get_activation_random())
-        neurs.append(get_random_neurons())
-    return neurs, acts
+        neurons.append(get_random_neurons())
+    return neurons, acts
 
 
 def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_dim=1, out_dim=1):
@@ -50,14 +56,14 @@ def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_
 
 
 class NeuralNetworkDesigner:
-    def __init__(self, all_neurons, all_activations, linspace, expression, epochs=300, initial_temperature=1000,
+    def __init__(self, all_neurons, all_activations, lin_space, expression, epochs=300, initial_temperature=1000,
                  scale=0.8):
         self.epochs = epochs
         self.initial_temperature = initial_temperature
         self.scale = scale
         self.layers_neurons = all_neurons
         self.layers_activations = all_activations
-        self.x, self.y = get_data_direct(linspace, expression)
+        self.x, self.y = get_data_direct(lin_space, expression)
         self.x, self.y = reshape(self.x, self.y)
         self.scale_x, self.scale_y = scale_data()
         self.x, self.y = fit_trans(self.x, self.y, self.scale_x, self.scale_y)

@@ -5,11 +5,12 @@
 <ul>
     {% if current_user.is_anonymous %}
         <li><a>Login</a></li>
+        <li><a>Register</a></li>
     {% else %}
         <li><a>Logout</a></li>
     {% endif %}
     <li><a>Home</a></li>
-
+    <li><a>Report Bug</a></li>
 </ul>
 {% block content %}
 

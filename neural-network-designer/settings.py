@@ -124,3 +124,5 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     '/home/piotr/Documents/neural-network-designer/static',
 )
+
+LOGIN_REDIRECT_URL = 'index'

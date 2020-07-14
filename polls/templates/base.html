@@ -1,17 +1,18 @@
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'styles/base.css' %}">
 <html lang="">
-<body>
-<ul>
+<ul class="cont">
     {% if current_user.is_anonymous %}
-        <li><a>Login</a></li>
-        <li><a>Register</a></li>
+        <li><a href="{% url 'login' %}">Login</a></li>
+        <li><a href="{% url 'register' %}">Register</a></li>
     {% else %}
-        <li><a>Logout</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
     {% endif %}
-    <li><a>Home</a></li>
+    <li><a href="{% url 'index' %}">Home</a></li>
     <li><a>Report Bug</a></li>
 </ul>
+<body>
+
 {% block content %}
 
 {% endblock %}

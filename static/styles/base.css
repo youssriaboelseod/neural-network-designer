@@ -1,10 +1,10 @@
 body {
-    margin-top: 3%;
+    margin-top: 10%;
     background-size: cover;
     background: linear-gradient(0.25turn, gray, #ebf8e1, gray) no-repeat fixed center;
 }
 
-ul {
+.cont {
     z-index: 999;
     justify-content: space-around;
     align-items: center;

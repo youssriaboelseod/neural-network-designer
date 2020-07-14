@@ -18,16 +18,16 @@ body {
     width: 100%;
 }
 
-li {
+.cont li {
     float: left;
     border-right: 1px solid #bbb;
 }
 
-li:last-child {
+.cont li:last-child {
     border-right: none;
 }
 
-li a {
+.cont li a {
     display: block;
     color: white;
     text-align: center;
@@ -35,10 +35,10 @@ li a {
     text-decoration: none;
 }
 
-li a:hover {
+.cont li a:hover {
     background-color: #111;
 }
 
-li a:active {
+.cont li a:active {
     background-color: green;
 }

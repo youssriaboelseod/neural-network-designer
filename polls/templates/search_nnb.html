@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+    <form method='post' action='#'>
+        {% csrf_token %}
+        <input type="text" value="x**2-5*x+1" name="Func">
+        <input type="submit" value="Find" name="Find">
+    </form>
+    <table>
+        <tr>
+            <th>Field creator</th>
+            <th>Field problem</th>
+            <th>Field activation_list</th>
+            <th>Field neuron_list</th>
+        </tr>
+        {% for item in query_results %}
+            <tr>
+                <td>{{ item.creator }}</td>
+                <td>{{ item.problem }}</td>
+                <td>{{ item.activation_list }}</td>
+                <td>{{ item.neuron_list }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}

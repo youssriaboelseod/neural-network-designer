@@ -2,12 +2,13 @@
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login, logout
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template import loader
 
-from polls.forms import *
+from polls.models import NeuralNetworks
 
 
 def index(request):
@@ -19,12 +20,13 @@ def index(request):
 def sign_up(request):
     if request.method == "POST":
         form = UserCreationForm(request.POST)
+        print(form.is_valid())
         if form.is_valid():
             user = form.save()
             username = form.cleaned_data.get('username')
+            password = form.cleaned_data['password1']
             login(request, user)
             return redirect("index")
-
         else:
             for msg in form.error_messages:
                 print(form.error_messages[msg])
@@ -32,31 +34,20 @@ def sign_up(request):
             return render(request=request,
                           template_name="register.html",
                           context={"form": form, 'current_user': request.user})
-    form = UserCreationForm
+    form = UserCreationForm()
     return render(request=request,
                   template_name="register.html",
                   context={"form": form, 'current_user': request.user})
 
 
-def sign_in(request):
-    if request.method == 'POST':
-        form = SignInForm(request.POST)
-        if form.is_valid():
-            form.save()
-            username = form.cleaned_data.get('username')
-            raw_pwd = form.cleaned_data.get('password')
-            user = authenticate(username=username, password=raw_pwd)
-            login(request, user)
-            return redirect('index')
-    else:
-        form = SignInForm()
-    return render(request, 'login.html', {'form': form, 'current_user': request.user})
-
-
+@login_required
 def logout_request(request):
+    usr = request.user
     logout(request)
     messages.info(request, "Logged out successfully!")
-    return redirect("logged_out")
+    return render(request=request,
+                  template_name="logout.html",
+                  context={'old_user': usr, 'current_user': request.user})
 
 
 def login_request(request):
@@ -78,3 +69,13 @@ def login_request(request):
     return render(request=request,
                   template_name="login.html",
                   context={"form": form, 'current_user': request.user})
+
+
+def search_nnb(request):
+    query_results = NeuralNetworks.objects.all()
+    if request.POST.get('Find'):
+        print(request.POST.get('Func'))
+        query_results = NeuralNetworks.objects.filter(problem=request.POST.get('Func'))
+    return render(request=request,
+                  template_name="search_nnb.html",
+                  context={'current_user': request.user, 'query_results': query_results})

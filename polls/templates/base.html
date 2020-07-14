@@ -7,14 +7,17 @@
         <li><a href="{% url 'register' %}">Register</a></li>
     {% else %}
         <li><a href="{% url 'logout' %}">Logout</a></li>
+        <li><a href="{% url 'search-nnb' %}">Search</a></li>
+        <li><a href="{% url 'create-nnb' %}">Create</a></li>
     {% endif %}
     <li><a href="{% url 'index' %}">Home</a></li>
     <li><a>Report Bug</a></li>
 </ul>
 <body>
+<center>
+    {% block content %}
 
-{% block content %}
-
-{% endblock %}
+    {% endblock %}
+</center>
 </body>
 </html>

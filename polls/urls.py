@@ -21,7 +21,8 @@ from django.conf.urls import url
 urlpatterns = [
     path('', views.index, name='index'),
     path('register/', views.sign_up, name='register'),
-    path('sign_in', views.sign_in, name='sign_in'),
     path("logout", views.logout_request, name="logout"),
-    path("login", views.login_request, name="login"),
+    path("login/", views.login_request, name="login"),
+    path("nnb/search/", views.search_nnb, name="search-nnb"),
+    path("nnb/create/", views.login_request, name="create-nnb"),
 ]

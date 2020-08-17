@@ -61,3 +61,19 @@ def get_data_direct(space, expr):
     lin = [int(x) for x in space[1:-1].split(',')]
     x = np.linspace(*lin)
     return x, eval(expr)
+
+
+def translate_pythonic(expression):
+    if '^' in expression:
+        return str(expression).replace('^', '**')
+    elif 'sin' in expression:
+        return str(expression).replace('sin', 'np.sin')
+    return expression
+
+
+def normalize_pythonic(expression):
+    if '**' in expression:
+        return str(expression).replace('**', '^')
+    elif 'np.sin' in expression:
+        return str(expression).replace('np.sin', 'sin')
+    return expression

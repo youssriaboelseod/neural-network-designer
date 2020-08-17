@@ -24,5 +24,5 @@ urlpatterns = [
     path("logout", views.logout_request, name="logout"),
     path("login/", views.login_request, name="login"),
     path("nnb/search/", views.search_nnb, name="search-nnb"),
-    path("nnb/create/", views.login_request, name="create-nnb"),
+    path("nnb/configure/", views.create_nnb, name="create-nnb"),
 ]

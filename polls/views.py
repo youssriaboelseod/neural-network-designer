@@ -8,6 +8,8 @@ from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template import loader
 
+from backend.nnb import *
+from backend.tools import *
 from polls.models import NeuralNetworks
 
 
@@ -79,3 +81,25 @@ def search_nnb(request):
     return render(request=request,
                   template_name="search_nnb.html",
                   context={'current_user': request.user, 'query_results': query_results})
+
+
+def create_nnb(request):
+    if request.POST.get('build'):
+        print('click')
+        expr = request.POST.get('expression')
+        ls = request.POST.get('linspace')
+        t = request.POST.get('time')
+        neurons, acts = get_random_model_scheme()
+        nnb = NeuralNetworkDesigner(neurons, acts, ls, translate_pythonic(expr))
+        res = nnb.simulated_annealing(t)
+        print(res)
+        new_record = NeuralNetworks(creator=request.user, problem=normalize_pythonic(expr), mse=res[0],
+                                    neuron_list=res[1],
+                                    activation_list=res[2])
+        new_record.save()
+        return render(request=request,
+                      template_name="result.html",
+                      context={'current_user': request.user, 'data': nnb.data})
+    return render(request=request,
+                  template_name="configure.html",
+                  context={'current_user': request.user})

@@ -55,14 +55,27 @@ def create_model(neurons_quantity_list, activations_list, krnl='he_uniform', in_
     return model
 
 
+def nantonum(yhat_plot, y_plot):
+    for i in range(len(y_plot)):
+        for j in range(len(y_plot[i])):
+            y_plot[i][j] = np.nan_to_num(y_plot[i][j])
+    for i in range(len(yhat_plot)):
+        for j in range(len(yhat_plot[i])):
+            yhat_plot[i][j] = np.nan_to_num(yhat_plot[i][j])
+
+
 class NeuralNetworkDesigner:
     def __init__(self, all_neurons, all_activations, lin_space, expression, epochs=300, initial_temperature=1000,
-                 scale=0.8):
-        self.epochs = epochs
-        self.initial_temperature = initial_temperature
-        self.scale = scale
-        self.layers_neurons = all_neurons
-        self.layers_activations = all_activations
+                 scale=0.8, resets=True):
+        self.data = dict()
+        self.data['epochs'] = epochs
+        self.data['initial_activations'] = all_activations
+        self.data['initial_neurons'] = all_neurons
+        self.data['linspace'] = lin_space
+        self.data['expression'] = expression
+        self.data['initial_temperature'] = initial_temperature
+        self.data['scale'] = scale
+        self.data['resets'] = resets
         self.x, self.y = get_data_direct(lin_space, expression)
         self.x, self.y = reshape(self.x, self.y)
         self.scale_x, self.scale_y = scale_data()
@@ -70,7 +83,7 @@ class NeuralNetworkDesigner:
 
     def model_prepare(self, model, x, y):
         model.compile(loss='mse', optimizer='adam')
-        model.fit(x, y, epochs=self.epochs, batch_size=10, verbose=0)
+        model.fit(x, y, epochs=self.data['epochs'], batch_size=10, verbose=0)
 
     def predict_y(self, model):
         yhat = model.predict(self.x)
@@ -78,42 +91,67 @@ class NeuralNetworkDesigner:
         yhat_plot = self.scale_y.inverse_transform(yhat)
         return yhat_plot, x_plot, y_plot
 
-    def simulated_annealing(self, t, args, save_structure=True, graph=True, resets=True, step_limit=300000):
-        end_time = get_time() + get_millis(t)
-        T = self.initial_temperature
-        scale = self.scale
+    def simulated_annealing(self, t, save_structure=True, graph=True, step_limit=300000):
+        self.data['time'] = t
+        wh = get_millis(int(t))
+        end_time = get_time() + wh
+        T = self.data['initial_temperature']
+        scale = self.data['scale']
 
-        neurs, acts = copy.deepcopy(self.layers_neurons), copy.deepcopy(self.layers_activations)
+        neurs, acts = copy.deepcopy(self.data['initial_neurons']), copy.deepcopy(self.data['initial_activations'])
         model = create_model(neurs, acts)
         self.model_prepare(model, self.x, self.y)
         yhat_plot, x_plot, y_plot = self.predict_y(model)
-        mse = mean_squared_error(y_plot, yhat_plot)
-
+        print(yhat_plot, y_plot)
+        nantonum(yhat_plot,y_plot)
+        print(yhat_plot, y_plot)
+        mse = np.nan_to_num(mean_squared_error(np.nan_to_num(y_plot), np.nan_to_num(yhat_plot)))
+        print(mse)
         plot_png_network(model)
         draw_graph(x_plot, y_plot, yhat_plot, mse)
 
         best_mse = mse
+        self.data['first_mse'] = copy.deepcopy(mse)
+        print(best_mse)
         best_model = model
+        best_neurs, best_acts = neurs, acts
         best_yhat = yhat_plot
         step = 0
         while get_time() <= end_time and T > 0:
             T *= scale
 
-            neurs, acts = get_random_model_scheme() if resets and step % step_limit else random_mutation(acts, neurs)
-            new_model = create_model(neurs, acts)
+            new_neurs, new_acts = get_random_model_scheme() if self.data[
+                                                                   'resets'] and step % step_limit else random_mutation(
+                acts,
+                neurs)
+            new_model = create_model(new_neurs, new_acts)
             self.model_prepare(new_model, self.x, self.y)
             yhat_plot, x_plot, y_plot = self.predict_y(new_model)
-            mse = mean_squared_error(y_plot, yhat_plot)
+            nantonum(yhat_plot, y_plot)
+            new_mse = mean_squared_error(y_plot, yhat_plot)
 
             if acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
-                best_mse = mse
-                print(best_mse)
-                best_yhat = yhat_plot
-                draw_graph(x_plot, y_plot, yhat_plot, best_mse)
-                best_model = new_model
+                neurs, acts = new_neurs, new_acts
+                model = new_model
+                mse = new_mse
+
+                if mse < best_mse:
+                    best_mse = mse
+                    best_neurs, best_acts = neurs, acts
+                    print(best_mse)
+                    best_yhat = yhat_plot
+                    draw_graph(x_plot, y_plot, yhat_plot, best_mse)
+                    best_model = model
             step += 1
+            if step % step_limit and self.data['first_mse'] == best_mse:
+                print('rs')
+                neurs, acts = get_random_model_scheme()
+
         if save_structure:
             plot_png_network(best_model)
         if graph:
             draw_graph(x_plot, y_plot, best_yhat, best_mse)
-        return best_mse
+        self.data['best_mse'] = best_mse
+        self.data['best_neurons'] = best_neurs
+        self.data['best_activations'] = best_acts
+        return best_mse, best_neurs, best_acts

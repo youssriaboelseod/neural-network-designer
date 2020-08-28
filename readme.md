@@ -11,6 +11,9 @@ Web application has been created for young developers to help them optimize or d
  When we are designing neural network model we need to select quantity of layer, neurons ( on each layer), activation functions and much more of things like these. 
  So just to simplify our lives this program is open- source :).
  Program for stated problem can choose optimal activations, layers number, neurons quantity  etc.
+
+Every model that is being designed or improved is stored using POSTGRES and assigned to creator ;).
+Application has implemented user system - login, registration.
  ## How it works?
  Application is created to design neural networks what is a part of artificial intelligence.
   This program were developed to help and improve AI results using computational intelligence, exactly metaheuristic algorithms.

@@ -1,4 +1,8 @@
 # Neural Network Designer
+## Table of contents
+* [Introduction](#Introduction)
+* [How it works?](#How-it-works?)
+* [Technologies](#technologies)
 ## Introduction
 Web application has been created for young developers to help them optimize or directly find optimal neural network according to
  their problem. Since almost everything can be stated as mathematical evidence( function) therefore possibilities of this application are unlimited.

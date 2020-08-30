@@ -1,7 +1,7 @@
 # Neural Network Designer
 ## Table of contents
 * [Introduction](#Introduction)
-* [How it works?](#How-it-works?)
+* [How it works?](#how-it-works)
 * [Technologies](#technologies)
 ## Introduction
 Web application has been created for young developers to help them optimize or directly find optimal neural network according to
@@ -19,7 +19,7 @@ Each user before even contemplating on his own neural network could try to searc
 Web application using django user- login and registration system.
 
 ## How it works?
- Application is created to design neural networks what is a part of artificial intelligence.
+ Application is created to design neural networks what in fact is a large part of artificial intelligence.
   This program were developed to help and improve AI results using computational intelligence, exactly metaheuristic algorithms.
  To improve or even create new networks I have used algorithm- simulated annealing( SA). But how does it really work ?
  So it is an algorithm based on initial solution that in given time trying to improve it, by mutating model structure.

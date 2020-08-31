@@ -29,6 +29,14 @@ Web application using django user- login and registration system.
    that sometimes we can stuck in local optimum. SA handling that by moving to the worse solutions in accordance with
    temperature. After given time for example 30 seconds. Program return the most optimal solution that he could find on this
    time interval. [More Wikipedia SA](https://en.wikipedia.org/wiki/Simulated_annealing)
+### Details
+
+| Initial Model | Mutations/Disturbs|Second Header |
+| ------------- | ------------- | ------------- |
+| Randomly created model  | random layer deletion | Restarts after N iterations |
+| model passed by user  | random layer insertion  | Moving to worse solution in accordance with temperature ( initial T0 )|
+|   | change activation on random layer  |  |
+|   | change neurons quantity on random layer  |  |
 #### Initial Model
 Can be alternatively input by:
 1. model passed by user

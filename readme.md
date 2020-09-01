@@ -1,10 +1,14 @@
 # Neural Network Designer
 ## Table of contents
+
 * [Introduction](#Introduction)
+* [General info](#general-info)
 * [How it works?](#how-it-works)
 * [Technologies](#technologies)
+* [Installation](#installation)
+* [Launch](#launch)
 ## Introduction
-Web application has been created for young developers to help them optimize or directly find optimal neural network according to
+Web application has been created for developers to help them optimize or directly find optimal neural network according to
  their problem. Since almost everything can be stated as mathematical evidence( function) therefore possibilities of this application are unlimited.
  So let's suppose our company have some problem. Firstly we need to figure out what we want to maximalize, minimalize and want does not touching our interest.
  When we already found out that, we can state our problem as a mathematical evidence for example 
@@ -14,9 +18,12 @@ Web application has been created for young developers to help them optimize or d
  When we are designing neural network model we need to select quantity of layer, neurons ( on each layer), activation functions and much more of things like these. 
   To sum up application for stated problem can choose optimal activations, layers number, neurons quantity  etc. It can save a lot of developer time and save some time to play a chess round or spend time with family.
 
-Every model that is being created or improved for given function is stored using postgres in database and assigned to it's creator ;).
-Each user before even contemplating on his own neural network could try to search through database for already found solutions to similar problems.
-Web application using django user- login and registration system.
+## General Info
+
+- Every model that is being created or improved for given function is stored using postgres in database and assigned to it's creator ;).
+- Each user before even contemplating on his own neural network could try to search through database for already found solutions to similar problems.
+- Web application using django user- login and registration system.
+- User can print image with generated neural network model
 
 ## How it works?
  Application is created to design neural networks what in fact is a large part of artificial intelligence.
@@ -31,25 +38,23 @@ Web application using django user- login and registration system.
    time interval. [More Wikipedia SA](https://en.wikipedia.org/wiki/Simulated_annealing)
 ### Details
 
-| Initial Model | Mutations/Disturbs|Second Header |
+| Initial Model | Mutations/Disturbs| Local Optimum Problem Solution |
 | ------------- | ------------- | ------------- |
-| Randomly created model  | random layer deletion | Restarts after N iterations |
-| model passed by user  | random layer insertion  | Moving to worse solution in accordance with temperature ( initial T0 )|
+| randomly created model  | random layer deletion | restarts after N iterations |
+| model passed by user  | random layer insertion  | moving to worse solution in accordance with temperature ( initial T0 )|
 |   | change activation on random layer  |  |
 |   | change neurons quantity on random layer  |  |
-#### Initial Model
-Can be alternatively input by:
-1. model passed by user
-2. Randomly created model
-#### Mutation
-Structure in next iterations can be mutated or disturbed by :
-1. random layer deletion
-2. random layer insertion
-3. change activation on random layer
-4. change neurons quantity on random layer
-#### Local Optimum Problem Solution
-1. Restarts after N iterations
-2. Moving to worse solution in accordance with temperature ( initial T0 )
+
+##Installation
+You need to have software for every technology described in [Technologies](#technologies) installed via pip
+and some more:
+- libcuda1.so
+- pydotplus
+- make project connection with local postgres database
+
+##Launch
+To run application you just have to connect project with postgres database and run it by command
+`python3 manage.py runserver`
 
 ## Technologies
 
@@ -61,6 +66,7 @@ Structure in next iterations can be mutated or disturbed by :
 - CSS 3
 
 
+
 - Tensorflow (GPU)
 - Keras
 - Sklearn
@@ -69,9 +75,3 @@ Structure in next iterations can be mutated or disturbed by :
 - Numpy
 - Matplotlib
 - Graphviz
-
-# Requirments 
-- pydotplus
-- graphviz 
-- tensorflow-gpu
-- libcuda.so

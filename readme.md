@@ -45,14 +45,14 @@ Web application has been created for developers to help them optimize or directl
 |   | change activation on random layer  |  |
 |   | change neurons quantity on random layer  |  |
 
-##Installation
+## Installation
 You need to have software for every technology described in [Technologies](#technologies) installed via pip
 and some more:
 - libcuda1.so
 - pydotplus
 - make project connection with local postgres database
 
-##Launch
+## Launch
 To run application you just have to connect project with postgres database and run it by command
 `python3 manage.py runserver`
 

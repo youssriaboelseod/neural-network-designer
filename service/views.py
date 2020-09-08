@@ -93,36 +93,37 @@ def search_nnb(request):
 
 def create_nnb(request):
     if request.POST.get('build'):
-        expr = request.POST.get('expression')
-        ls = request.POST.get('linspace')
-        t = request.POST.get('time')
-        neurons, acts = get_random_model_scheme()
+        expr, ls, t, initial_temp, scale, rs_step, neurons, acts = get_parameters_configuration(request)
+        neurons, acts = choose_model_creation(acts, neurons)
         new_nnb = NeuralNetworkDesigner(neurons, acts, ls, translate_pythonic(expr))
-        res = new_nnb.simulated_annealing(t)
+        setup_initial_parameters(new_nnb, scale, initial_temp, rs_step)
+        print(neurons, acts)
+        res = new_nnb.simulated_annealing(t) if len(
+            rs_step) == 0 and not rs_step.isdigit() else new_nnb.simulated_annealing(t, step_limit=int(rs_step))
         new_record = NeuralNetworks(creator=request.user, problem=normalize_pythonic(expr), mse=res[0],
-                                    neuron_list=res[1],
-                                    activation_list=res[2])
+                                    neuron_list=res[1], activation_list=res[2])
         new_record.save()
         xp, yp, yhp = new_nnb.data['x_plot'], new_nnb.data['y_plot'], new_nnb.data['yhat_plot']
-        # xpn = base64.b64encode(pickle.dumps(xp))
-        # ypn = base64.b64encode(pickle.dumps(yp))
-        # yhpn = base64.b64encode(pickle.dumps(yhp))
         graphs_record = Graphs(nnb_id=new_record, xplot=list(xp.flatten()), yplot=list(yp.flatten()),
                                yhatplot=list(yhp.flatten()))
         graphs_record.save()
+        print(new_nnb.data['best_neurons'], new_nnb.data['best_activations'])
         return render(request=request,
                       template_name="result.html",
-                      context={'current_user': request.user, 'data': new_nnb.data})
+                      context={'current_user': request.user, 'data': new_nnb.data, 'graph_id': graphs_record.id})
     return render(request=request,
                   template_name="configure.html",
                   context={'current_user': request.user})
 
 
-def grafico(request):
+def grafico(request, graph_id):
     query_results = Graphs.objects.all()
-    query_results = query_results.filter(id=7).first()
+    query_results = query_results.filter(id=graph_id).first()
     pyplot.scatter(query_results.xplot, query_results.yplot, label='Actual')
     pyplot.scatter(query_results.xplot, query_results.yhatplot, label='Predicted')
+    print(query_results.xplot)
+    print(query_results.yplot)
+    print(query_results.yhatplot)
     # pyplot.title('MSE: %.3f' % mse)
     buffer = io.BytesIO()
     canvas = pylab.get_current_fig_manager().canvas
@@ -131,3 +132,36 @@ def grafico(request):
     graphIMG.save(buffer, "PNG")
     pylab.close()
     return HttpResponse(buffer.getvalue(), content_type="Image/png")
+
+
+def choose_model_creation(acts, neurons):
+    if len(acts.split(',')) != 0 and len(acts.split(',')) == len(neurons.split(',')):
+        try:
+            neurons, acts = [int(x) for x in neurons.split(',')], [str(x) for x in acts.split(',')]
+            return neurons, acts
+        except ValueError:
+            neurons, acts = get_random_model_scheme()
+    else:
+        neurons, acts = get_random_model_scheme()
+    return neurons, acts
+
+
+def setup_initial_parameters(new_nnb, scale, initial_temp, rs_step):
+    if scale.replace('.', '', 1).isdigit():
+        new_nnb.data['scale'] = scale
+    if initial_temp.replace('.', '', 1).isdigit():
+        new_nnb.data['initial_temperature'] = initial_temp
+    if rs_step.replace('.', '', 1).isdigit():
+        new_nnb.data['rs_step'] = rs_step
+
+
+def get_parameters_configuration(request):
+    expr = request.POST.get('expression')
+    ls = request.POST.get('linspace')
+    t = request.POST.get('time')
+    initial_temp = request.POST.get('initial_temperature')
+    scale = request.POST.get('scale')
+    rs_step = request.POST.get('reset_step')
+    acts = request.POST.get('activation_list')
+    neurons = request.POST.get('neuronsq_list')
+    return expr, ls, t, initial_temp, scale, rs_step, neurons, acts

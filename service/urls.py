@@ -27,5 +27,6 @@ urlpatterns = [
                   path("login/", views.login_request, name="login"),
                   path("nnb/search/", views.search_nnb, name="search-nnb"),
                   path("nnb/configure/", views.create_nnb, name="create-nnb"),
-                  path('graph/', views.grafico, name="graph"),
+                  # path('graph/', views.grafico, name="graph"),
+                  path('graph/<int:graph_id>', views.grafico, name='graph'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

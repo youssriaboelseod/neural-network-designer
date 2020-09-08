@@ -95,18 +95,15 @@ class NeuralNetworkDesigner:
         self.data['time'] = t
         wh = get_millis(int(t))
         end_time = get_time() + wh
-        T = self.data['initial_temperature']
+        temp = self.data['initial_temperature']
         scale = self.data['scale']
 
         neurs, acts = copy.deepcopy(self.data['initial_neurons']), copy.deepcopy(self.data['initial_activations'])
         model = create_model(neurs, acts)
         self.model_prepare(model, self.x, self.y)
         yhat_plot, x_plot, y_plot = self.predict_y(model)
-        print(yhat_plot, y_plot)
-        nantonum(yhat_plot,y_plot)
-        print(yhat_plot, y_plot)
+        nantonum(yhat_plot, y_plot)
         mse = np.nan_to_num(mean_squared_error(np.nan_to_num(y_plot), np.nan_to_num(yhat_plot)))
-        print(mse)
         plot_png_network(model)
         draw_graph(x_plot, y_plot, yhat_plot, mse)
 
@@ -117,20 +114,19 @@ class NeuralNetworkDesigner:
         best_neurs, best_acts = neurs, acts
         best_yhat = yhat_plot
         step = 0
-        while get_time() <= end_time and T > 0:
-            T *= scale
+        while get_time() <= end_time and temp > 0:
+            temp *= scale
 
             new_neurs, new_acts = get_random_model_scheme() if self.data[
                                                                    'resets'] and step % step_limit else random_mutation(
-                acts,
-                neurs)
+                acts, neurs)
             new_model = create_model(new_neurs, new_acts)
             self.model_prepare(new_model, self.x, self.y)
             yhat_plot, x_plot, y_plot = self.predict_y(new_model)
             nantonum(yhat_plot, y_plot)
             new_mse = mean_squared_error(y_plot, yhat_plot)
 
-            if acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
+            if acceptance_probability(best_mse, mse, temp) > random.uniform(0, 1):
                 neurs, acts = new_neurs, new_acts
                 model = new_model
                 mse = new_mse
@@ -152,7 +148,7 @@ class NeuralNetworkDesigner:
         if graph:
             draw_graph(x_plot, y_plot, best_yhat, best_mse)
         self.data['x_plot'] = x_plot
-        self.data['y_plot'] = x_plot
+        self.data['y_plot'] = y_plot
         self.data['yhat_plot'] = best_yhat
         self.data['best_mse'] = best_mse
         self.data['best_neurons'] = best_neurs

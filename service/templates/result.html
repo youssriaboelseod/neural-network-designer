@@ -3,11 +3,10 @@
     {% csrf_token %}
 
     <h1>Config</h1>
-    <p><a href="{% url 'graph' %}">See graph!</a>
-
-    </p>
-    <iframe src="{% url 'graph' %}" title="W3Schools Free Online Web Tutorials"></iframe>
+    <p><a href="{% url 'graph' graph_id %}">See graph!</a></p>
+    <div id="img_home"></div>
     <ul>
+        <li>{{ graph_id }}</li>
         <li>{{ data.initial_temperature }}</li>
         <li>{{ data.scale }}</li>
         <li>{{ data.epochs }}</li>
@@ -33,4 +32,9 @@
         <li> {{ data.best_neurons }}</li>
         <li> {{ data.best_mse }}</li>
     </ul>
+    <script>
+        var img = new Image();
+        img.src = "{% url 'graph' graph_id %}"
+        img_home.appendChild(img);
+    </script>
 {% endblock %}

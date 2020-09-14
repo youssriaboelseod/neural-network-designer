@@ -75,8 +75,12 @@ function create_table(parent, actid, neurid) {
 function display_mse_change() {
     let n1 = parseFloat(document.getElementById('initial_mse').innerHTML),
         n2 = parseFloat(document.getElementById('final_mse').innerHTML)
-    let diff = (n1 - n2) / n1
-    document.getElementById('mse_change').innerHTML = 'Your Final model is ' + diff.toString() + 'better than inital'
+    let diff = (n1 - n2) / n1, txt
+    if (diff !== 1)
+        txt = 'Your Final model is ' + diff.toString() + 'better than inital'
+    else
+        txt = 'Sorry we could not find model better than initial ;/'
+    document.getElementById('mse_change').innerText = txt
 }
 
 display_mse_change()

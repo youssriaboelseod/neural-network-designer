@@ -51,7 +51,7 @@ Main Loop of simulated annealing
                 neurs, acts = get_random_model_scheme()
 ```
 
-Example model structure in PNG format.
+#### Example model structure in PNG format.
 ![IMG](model.png)
 ## General Info
 - Every model that is being created or improved for given function is stored using postgres in database and assigned to it's creator ;).

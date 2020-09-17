@@ -50,6 +50,9 @@ Main Loop of simulated annealing
             if step % step_limit and self.data['first_mse'] == best_mse:
                 neurs, acts = get_random_model_scheme()
 ```
+
+Example model structure in PNG format.
+![IMG](model.png)
 ## General Info
 - Every model that is being created or improved for given function is stored using postgres in database and assigned to it's creator ;).
 - Each user before even contemplating on his own neural network could try to search through database for already found solutions to similar problems.

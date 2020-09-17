@@ -2,11 +2,13 @@
 ## Table of contents
 
 * [Introduction](#Introduction)
+* [Code Example](#code-example)
 * [General info](#general-info)
 * [How it works?](#how-it-works)
 * [Technologies](#technologies)
 * [Installation](#installation)
 * [Launch](#launch)
+* [License](#license)
 ## Introduction
 Web application has been created for developers to help them optimize or directly find optimal neural network according to
  their problem. Since almost everything can be stated as mathematical evidence( function) therefore possibilities of this application are unlimited.
@@ -17,9 +19,38 @@ Web application has been created for developers to help them optimize or directl
  prototype that will be best(good enough) to solve our problem.
  When we are designing neural network model we need to select quantity of layer, neurons ( on each layer), activation functions and much more of things like these. 
   To sum up application for stated problem can choose optimal activations, layers number, neurons quantity  etc. It can save a lot of developer time and save some time to play a chess round or spend time with family.
+## Code Example
+Main Loop of simulated annealing
+```python
+        while get_time() <= end_time and T > 0:
+            T *= scale
 
+            new_neurs, new_acts = get_random_model_scheme() if self.data[
+                                                                   'resets'] and step % step_limit else random_mutation(
+                acts,
+                neurs)
+            new_model = create_model(new_neurs, new_acts)
+            self.model_prepare(new_model, self.x, self.y)
+            yhat_plot, x_plot, y_plot = self.predict_y(new_model)
+            nantonum(yhat_plot, y_plot)
+            new_mse = mean_squared_error(y_plot, yhat_plot)
+
+            if acceptance_probability(best_mse, mse, T) > random.uniform(0, 1):
+                neurs, acts = new_neurs, new_acts
+                model = new_model
+                mse = new_mse
+
+                if mse < best_mse:
+                    best_mse = mse
+                    best_neurs, best_acts = neurs, acts
+                    best_yhat = yhat_plot
+                    draw_graph(x_plot, y_plot, yhat_plot, best_mse)
+                    best_model = model
+            step += 1
+            if step % step_limit and self.data['first_mse'] == best_mse:
+                neurs, acts = get_random_model_scheme()
+```
 ## General Info
-
 - Every model that is being created or improved for given function is stored using postgres in database and assigned to it's creator ;).
 - Each user before even contemplating on his own neural network could try to search through database for already found solutions to similar problems.
 - Web application using django user- login and registration system.
@@ -75,3 +106,6 @@ To run application you just have to connect project with postgres database and r
 - Numpy
 - Matplotlib
 - Graphviz
+
+## License
+Open- Source

@@ -76,10 +76,10 @@ function display_mse_change() {
     let n1 = parseFloat(document.getElementById('initial_mse').innerHTML),
         n2 = parseFloat(document.getElementById('final_mse').innerHTML)
     let diff = (n1 - n2) / n1, txt
-    if (diff !== 1)
-        txt = 'Your Final model is ' + diff.toString() + 'better than inital'
+    if (diff !== 1 && !isNaN(diff))
+        txt = 'Your Final model is ' + diff.toString() + ' better than inital'
     else
-        txt = 'Sorry we could not find model better than initial ;/'
+        txt = 'Sorry we could not find model better than initial. Try to give our algorithm some more time.'
     document.getElementById('mse_change').innerText = txt
 }
 

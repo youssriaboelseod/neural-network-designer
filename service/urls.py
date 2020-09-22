@@ -17,6 +17,8 @@ from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
 from django.conf.urls import url
+from django.conf.urls.static import static
+from django.conf import settings
 
 urlpatterns = [
     path('', views.index, name='index'),
@@ -25,4 +27,5 @@ urlpatterns = [
     path("login/", views.login_request, name="login"),
     path("nnb/search/", views.search_nnb, name="search-nnb"),
     path("nnb/configure/", views.create_nnb, name="create-nnb"),
+    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 ]

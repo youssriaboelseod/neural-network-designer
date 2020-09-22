@@ -1,5 +1,6 @@
 from django.contrib.postgres.fields import ArrayField
 from django.db import models
+from django.db.models import CASCADE, ImageField
 
 
 class NeuralNetworks(models.Model):
@@ -15,3 +16,9 @@ class NeuralNetworks(models.Model):
 
     def __str__(self):
         return str(self.neuron_list) + str(self.activation_list)
+
+
+class Graphs(models.Model):
+    id = models.AutoField(primary_key=True)
+    nnb_id = models.ForeignKey(NeuralNetworks, on_delete=CASCADE)
+    image = ImageField(upload_to='static/images/', blank=True, null=True)

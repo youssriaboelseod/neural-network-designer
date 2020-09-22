@@ -4,6 +4,18 @@
     <div id="form_bag">
         <form method="POST">
             {% csrf_token %}
+            <button type="button" class="collapsible">Input initial model</button>
+            <div class="content" style="display: none">
+                <div>
+                    <p><label> Activations
+                        <input type="text" id="activation_list">
+                    </label>
+                    <p></p>
+                    <p><label> Neurons Quantity
+                        <input type="text" id="neuronsq_list">
+                    </label></p>
+                </div>
+            </div>
             <p>
                 <label> Expression
                     <input type="text" name="expression">
@@ -17,23 +29,10 @@
                     <input type="text" name="linspace">
                 </label></p>
             <p>
-                <input type="submit" value='build' name="build" onclick="show_div();countdown()"/>
+                <input type="submit"    value='build' name="build" onclick="show_div();countdown()"/>
             </p>
-            <button type="button" class="collapsible">Input initial model</button>
-            <div class="content" style="display: none">
-                <div>
-                    <p><label> Activations
-                        <input type="text" id="activation_list">
-                    </label>
-                    <p></p>
-                    <p><label> Neurons Quantity
-                        <input type="text" id="neuronsq_list">
-                    </label></p>
-                </div>
-            </div>
+
         </form>
-        <input type="button" name="answer" value="Show Div" onclick="show_div()"/>
-        <input type="button" name="answer" value="Count Down" onclick="countdown()"/>
     </div>
     <div id="loading_bag">
         <div id="loader" style="display:none;" class="loader">

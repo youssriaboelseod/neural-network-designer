@@ -1,4 +1,10 @@
 # Create your views here.
+import base64
+import io
+import pickle
+
+import PIL
+import pylab
 from django.contrib import messages
 from django.contrib.auth import authenticate
 from django.contrib.auth import login, logout
@@ -7,10 +13,12 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template import loader
+from matplotlib.pyplot import barh, yticks, xlabel, ylabel, title, subplots_adjust
+from numpy.ma import arange
 
 from backend.nnb import *
 from backend.tools import *
-from service.models import NeuralNetworks
+from service.models import NeuralNetworks, Graphs
 
 
 def index(request):
@@ -85,21 +93,42 @@ def search_nnb(request):
 
 def create_nnb(request):
     if request.POST.get('build'):
-        print('click')
         expr = request.POST.get('expression')
         ls = request.POST.get('linspace')
         t = request.POST.get('time')
         neurons, acts = get_random_model_scheme()
-        nnb = NeuralNetworkDesigner(neurons, acts, ls, translate_pythonic(expr))
-        res = nnb.simulated_annealing(t)
+        new_nnb = NeuralNetworkDesigner(neurons, acts, ls, translate_pythonic(expr))
+        res = new_nnb.simulated_annealing(t)
         print(res)
         new_record = NeuralNetworks(creator=request.user, problem=normalize_pythonic(expr), mse=res[0],
                                     neuron_list=res[1],
                                     activation_list=res[2])
         new_record.save()
+        xp, yp, yhp = new_nnb.data['x_plot'], new_nnb.data['y_plot'], new_nnb.data['yhat_plot']
+        # xpn = base64.b64encode(pickle.dumps(xp))
+        # ypn = base64.b64encode(pickle.dumps(yp))
+        # yhpn = base64.b64encode(pickle.dumps(yhp))
+        print(xp, yp, yhp)
+        print(new_record.id)
+        graphs_record = Graphs(nnb_id=new_record, xplot=xp.tolist(), yplot=yp.tolist(), yhatplot=yhp.tolist())
+        graphs_record.save()
         return render(request=request,
                       template_name="result.html",
-                      context={'current_user': request.user, 'data': nnb.data})
+                      context={'current_user': request.user, 'data': new_nnb.data})
     return render(request=request,
                   template_name="configure.html",
                   context={'current_user': request.user})
+
+
+def grafico(request):
+    query_results = Graphs.objects.all()
+    # pyplot.scatter(x_plot, y_plot, label='Actual')
+    # pyplot.scatter(x_plot, yhat_plot, label='Predicted')
+    # pyplot.title('MSE: %.3f' % mse)
+    buffer = io.BytesIO()
+    canvas = pylab.get_current_fig_manager().canvas
+    canvas.draw()
+    graphIMG = PIL.Image.frombytes('RGB', canvas.get_width_height(), canvas.tostring_rgb())
+    graphIMG.save(buffer, "PNG")
+    pylab.close()
+    return HttpResponse(buffer.getvalue(), content_type="Image/png")

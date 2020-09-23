@@ -151,6 +151,9 @@ class NeuralNetworkDesigner:
             plot_png_network(best_model)
         if graph:
             draw_graph(x_plot, y_plot, best_yhat, best_mse)
+        self.data['x_plot'] = x_plot
+        self.data['y_plot'] = x_plot
+        self.data['yhat_plot'] = best_yhat
         self.data['best_mse'] = best_mse
         self.data['best_neurons'] = best_neurs
         self.data['best_activations'] = best_acts

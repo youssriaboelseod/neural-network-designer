@@ -21,11 +21,11 @@ from django.conf.urls.static import static
 from django.conf import settings
 
 urlpatterns = [
-    path('', views.index, name='index'),
-    path('register/', views.sign_up, name='register'),
-    path("logout", views.logout_request, name="logout"),
-    path("login/", views.login_request, name="login"),
-    path("nnb/search/", views.search_nnb, name="search-nnb"),
-    path("nnb/configure/", views.create_nnb, name="create-nnb"),
-    static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-]
+                  path('', views.index, name='index'),
+                  path('register/', views.sign_up, name='register'),
+                  path("logout", views.logout_request, name="logout"),
+                  path("login/", views.login_request, name="login"),
+                  path("nnb/search/", views.search_nnb, name="search-nnb"),
+                  path("nnb/configure/", views.create_nnb, name="create-nnb"),
+                  path("graph/", views.grafico, name="graph-nnb"),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -21,4 +21,6 @@ class NeuralNetworks(models.Model):
 class Graphs(models.Model):
     id = models.AutoField(primary_key=True)
     nnb_id = models.ForeignKey(NeuralNetworks, on_delete=CASCADE)
-    image = ImageField(upload_to='static/images/', blank=True, null=True)
+    xplot = ArrayField(models.FloatField(null=True, blank=True), null=True, blank=True)
+    yplot = ArrayField(models.FloatField(null=True, blank=True), null=True, blank=True)
+    yhatplot = ArrayField(models.FloatField(null=True, blank=True), null=True, blank=True)

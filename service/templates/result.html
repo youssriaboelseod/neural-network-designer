@@ -3,6 +3,10 @@
     {% csrf_token %}
 
     <h1>Config</h1>
+    <p><a href="{% url 'graph' %}">See graph!</a>
+
+    </p>
+    <iframe src="{% url 'graph' %}" title="W3Schools Free Online Web Tutorials"></iframe>
     <ul>
         <li>{{ data.initial_temperature }}</li>
         <li>{{ data.scale }}</li>

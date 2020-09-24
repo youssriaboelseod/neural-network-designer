@@ -99,7 +99,6 @@ def create_nnb(request):
         neurons, acts = get_random_model_scheme()
         new_nnb = NeuralNetworkDesigner(neurons, acts, ls, translate_pythonic(expr))
         res = new_nnb.simulated_annealing(t)
-        print(res)
         new_record = NeuralNetworks(creator=request.user, problem=normalize_pythonic(expr), mse=res[0],
                                     neuron_list=res[1],
                                     activation_list=res[2])
@@ -108,9 +107,8 @@ def create_nnb(request):
         # xpn = base64.b64encode(pickle.dumps(xp))
         # ypn = base64.b64encode(pickle.dumps(yp))
         # yhpn = base64.b64encode(pickle.dumps(yhp))
-        print(xp, yp, yhp)
-        print(new_record.id)
-        graphs_record = Graphs(nnb_id=new_record, xplot=xp.tolist(), yplot=yp.tolist(), yhatplot=yhp.tolist())
+        graphs_record = Graphs(nnb_id=new_record, xplot=list(xp.flatten()), yplot=list(yp.flatten()),
+                               yhatplot=list(yhp.flatten()))
         graphs_record.save()
         return render(request=request,
                       template_name="result.html",
@@ -122,8 +120,9 @@ def create_nnb(request):
 
 def grafico(request):
     query_results = Graphs.objects.all()
-    # pyplot.scatter(x_plot, y_plot, label='Actual')
-    # pyplot.scatter(x_plot, yhat_plot, label='Predicted')
+    query_results = query_results.filter(id=7).first()
+    pyplot.scatter(query_results.xplot, query_results.yplot, label='Actual')
+    pyplot.scatter(query_results.xplot, query_results.yhatplot, label='Predicted')
     # pyplot.title('MSE: %.3f' % mse)
     buffer = io.BytesIO()
     canvas = pylab.get_current_fig_manager().canvas

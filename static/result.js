@@ -32,6 +32,7 @@ function find_most_freq(array) {
 
 function append_info(parent, n_sum, id, sm, txt) {
     n_sum.id = id
+    n_sum.className = id
     n_sum.innerHTML = txt + sm
     document.getElementById(parent).appendChild(n_sum);
 }
@@ -104,16 +105,33 @@ function display_mse_change() {
     document.getElementById('mse_change').innerText = txt
 }
 
-function compute_diff(t1, t2) {
-    let par = document.getElementById('diffs');
-    let a = document.getElementById(t1).childNodes;
-    let b = document.getElementById(t2).childNodes;
-    console.log(a)
+function is_div(el) {
+    return el.tagName === 'DIV';
+}
+
+function get_value(el) {
+    return el.innerHTML.split(':')[1].replace(' ', '')
+}
+
+function calc_diff(x1, x2, txt) {
+    let par = document.getElementById('diffs')
+    let new_it = document.createElement('div')
+    new_it.innerHTML = txt + (parseInt(x1) - parseInt(x2)).toString()
+    par.appendChild(new_it)
+
+}
+
+function compute_diff(t1, t2,c,txt) {
+    let a = document.getElementById(t1);
+    let b = document.getElementById(t2);
+    let x1 = get_value(a.getElementsByClassName(c))
+    let x2 = get_value(b.getElementsByClassName(c))
+    calc_diff(x1,x2,txt)
 }
 
 create_table('initial_details_table', "initial_acts", "initial_neurons")
 create_table('final_details_table', "final_acts", "final_neurons")
 display_mse_change()
-console.log('tst')
-compute_diff('initial_details', 'final_details')
+compute_diff('initial_details', 'final_details','n_sum','All neurons used difference: ')
+compute_diff('initial_details', 'final_details','l_quant','Inner Layers quantity diff: ')
 

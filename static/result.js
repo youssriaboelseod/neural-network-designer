@@ -11,78 +11,109 @@ function get_elements_quantity(id) {
 }
 
 
-// beauty_pythonic_list("initial_acts")
-// beauty_pythonic_list("initial_neurons")
-// beauty_pythonic_list("final_acts")
-// beauty_pythonic_list("final_neurons")
-function find_most_freq(cats) {
-    let counts = {}; //We are going to count occurrence of item here
-    let compare = 0;  //We are going to compare using stored value
-    let mostFrequent;
-    for (let i = 0, len = cats.length; i < len; i++) {
-        let word = cats[i];
-
-        if (counts[word] === undefined) { //if count[word] doesn't exist
-            counts[word] = 1;    //set count[word] value to 1
-        } else {                  //if exists
-            counts[word] = counts[word] + 1; //increment existing value
-        }
-        if (counts[word] > compare) {  //counts[word] > 0(first time)
-            compare = counts[word];   //set compare to counts[word]
-            mostFrequent = cats[i];  //set mostFrequent value
+function find_most_freq(array) {
+    if (array.length === 0)
+        return null;
+    let modeMap = {};
+    let maxEl = array[0], maxCount = 1;
+    for (let i = 0; i < array.length; i++) {
+        let el = array[i];
+        if (modeMap[el] == null)
+            modeMap[el] = 1;
+        else
+            modeMap[el]++;
+        if (modeMap[el] > maxCount) {
+            maxEl = el;
+            maxCount = modeMap[el];
         }
     }
-    return mostFrequent
+    return maxEl;
 }
 
-function create_table(parent, actid, neurid) {
-    var acts = document.getElementById(actid).innerHTML.replaceAll("[", "").replaceAll("]", "").replaceAll('\'', '').split(',')
-    var neurs = document.getElementById(neurid).innerHTML.replaceAll("[", "").replaceAll("]", "").replaceAll('\'', '').split(',')
-    var table = document.createElement('table'), tr = document.createElement('tr'), cells, i;
-    for (i = 0; i < 2; i++) {
-        tr.appendChild(document.createElement('td'));
-    }
-    for (i = 0; i <= acts.length; i++) {
-        table.appendChild(tr.cloneNode(true));
-    }
-    cells = table.getElementsByTagName('td'); // get all of the cells
-    let c1 = 0
-    let c2 = 0
-    let idx0 = 3
-    let idx1 = 4
-    let sm = 0
+function append_info(parent, n_sum, id, sm, txt) {
+    n_sum.id = id
+    n_sum.innerHTML = txt + sm
+    document.getElementById(parent).appendChild(n_sum);
+}
+
+function generate_table_board_and_fill(i, cells, acts, neurs, parent) {
+    let c1 = 0, c2 = 0, idx0 = 3, idx1 = 2, sm = 0
+    let cls_quant = 2;
     for (i = 0; i < 2 * (acts.length + 1); i++) {
         if (i === 0) {
-            cells[i].innerHTML = 'Activations'
-        } else if (i === 1) {
             cells[i].innerHTML = 'Neurons Quantity'
-        } else if (i === 2) {
+        } else if (i === 1) {
+            cells[i].innerHTML = 'Activations'
         } else if (i === idx0) {
             cells[i].innerHTML = acts[c1].replaceAll(' ', '')
             c1 = c1 + 1;
-            idx0 += 3;
+            idx0 += cls_quant;
         } else if (i === idx1) {
             cells[i].innerHTML = neurs[c2].replaceAll(' ', '')
             sm += parseInt(neurs[c2])
             c2 = c2 + 1;
-            idx1 += 3;
+            idx1 += cls_quant;
         }
     }
-    //cells[idx1].innerHTML = sm.toString()
+    append_info(parent.slice(0, -6), document.createElement('div'), 'n_sum', sm.toString(), 'All neurons used: ')
+    append_info(parent.slice(0, -6), document.createElement('div'), 'l_quant', acts.length - 2, 'Inner layers quantity: ')
+    append_info(parent.slice(0, -6), document.createElement('div'), 'most_freq_ac', find_most_freq(acts), 'Most frequent activation: ')
+}
+
+function add_environment(acts, neurs) {
+    acts.unshift('INPUT')
+    acts.push('OUTPUT')
+    neurs.unshift('1')
+    neurs.push('1')
+}
+
+function clear_disturbance(string) {
+    return string.replaceAll("[", "").replaceAll("]", "").replaceAll('\'', '').split(',')
+}
+
+function create_table(parent, actid, neurid) {
+    let acts = clear_disturbance(document.getElementById(actid).innerHTML)
+    let neurs = clear_disturbance(document.getElementById(neurid).innerHTML)
+    let table = document.createElement('table'), tr = document.createElement('tr'), cells, i;
+    add_environment(acts, neurs)
+    for (i = 0; i < 2; i++) {
+        tr.appendChild(document.createElement('td'));
+    }
+    for (i = 0; i < acts.length + 1; i++) {
+        table.appendChild(tr.cloneNode(true));
+    }
+    cells = table.getElementsByTagName('td'); // get all of the cells
+    generate_table_board_and_fill(i, cells, acts, neurs, parent)
     document.getElementById(parent).appendChild(table);
 }
 
 function display_mse_change() {
-    let n1 = parseFloat(document.getElementById('initial_mse').innerHTML),
-        n2 = parseFloat(document.getElementById('final_mse').innerHTML)
-    let diff = (n1 - n2) / n1, txt
-    if (diff !== 1 && !isNaN(diff))
-        txt = 'Your Final model is ' + diff.toString() + ' better than inital'
+    let n1 = parseFloat(document.getElementById('initial_mse').innerHTML.split(":")[1]),
+        n2 = parseFloat(document.getElementById('final_mse').innerHTML.split(":")[1])
+    document.getElementById('final_mse').innerHTML = 'Final MSE:' + n2.toFixed(3)
+    document.getElementById('initial_mse').innerHTML = 'Initial MSE: ' + n1.toFixed(3)
+    let diff = (n1 - n2) / n1 * 100
+    let txt
+    if (diff === 0 || isNaN(diff))
+        txt = 'Sorry we could not find model better than initial. ' +
+            '\n Probably problems: \n ' +
+            'working time was not enough- try to give our algorithm some more time. \n' +
+            ' initial solution was quite good and algorithm could not find any better solution in that time.'
     else
-        txt = 'Sorry we could not find model better than initial. Try to give our algorithm some more time.'
+        txt = 'Your Final model is ' + (diff).toFixed(4) + '% better than initial model.'
     document.getElementById('mse_change').innerText = txt
 }
 
-display_mse_change()
+function compute_diff(t1, t2) {
+    let par = document.getElementById('diffs');
+    let a = document.getElementById(t1).childNodes;
+    let b = document.getElementById(t2).childNodes;
+    console.log(a)
+}
+
 create_table('initial_details_table', "initial_acts", "initial_neurons")
 create_table('final_details_table', "final_acts", "final_neurons")
+display_mse_change()
+console.log('tst')
+compute_diff('initial_details', 'final_details')
+

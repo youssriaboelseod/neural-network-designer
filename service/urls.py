@@ -13,6 +13,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.views.generic import RedirectView
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from . import views
@@ -28,5 +29,6 @@ urlpatterns = [
                   path("nnb/search/", views.search_nnb, name="search-nnb"),
                   path("nnb/configure/", views.create_nnb, name="create-nnb"),
                   # path('graph/', views.grafico, name="graph"),
+                  url(r'^favicon\.ico$', RedirectView.as_view(url='/static/images/favicon.ico')),
                   path('graph/<int:graph_id>', views.grafico, name='graph'),
               ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

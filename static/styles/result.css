@@ -3,12 +3,28 @@
     background-color: rgb(255, 255, 255, 0.3);
 }
 
+#final_details_table table {
+    background-color: rgb(255, 255, 255, 0.5);
+}
+
+#initial_details_table table {
+    background-color: rgb(255, 255, 255, 0.5);
+}
+
 #configuration_table table, td, th, tr {
     border: solid black 1px;
     margin: 0 auto;
     text-align: center;
 }
 
+#mse_change {
+    box-shadow: gray 10px 10px 10px;
+    background-color: rgb(192, 192, 192, 0.6);
+    width: 60%;
+    border-radius: 10px;
+    margin-bottom: 130px;
+    height: auto;
+}
 
 #img_home {
     position: relative;

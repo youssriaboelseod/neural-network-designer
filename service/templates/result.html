@@ -38,22 +38,29 @@
     <div class="row">
         <div class="col">
             <h1>Initial Model Details</h1>
+            <div id="initial_details_table"></div>
             <div id="initial_acts" style="display: none"> {{ data.initial_activations }}</div>
             <div id="initial_neurons" style="display: none"> {{ data.initial_neurons }}</div>
-            <div id="initial_mse">Initial MSE: {{ data.first_mse }}</div>
-            <div id="initial_details_table"></div>
+            <div id="initial_details">
+                <div id="initial_mse">Initial MSE: {{ data.first_mse }}</div>
+            </div>
         </div>
         <div class="col">
             <h1>Final Model Details</h1>
+            <div id="final_details_table"></div>
             <div id="final_acts" style="display: none"> {{ data.best_activations }}</div>
             <div id="final_neurons" style="display: none"> {{ data.best_neurons }}</div>
-            <div id="final_mse">Final MSE: {{ data.best_mse }}</div>
-            <div id="final_details_table"></div>
+            <div id="final_details">
+                <div id="final_mse">Final MSE: {{ data.best_mse }}</div>
+            </div>
         </div>
     </div>
     <hr>
     <h1>Summary</h1>
-    <div id="mse_change"></div>
+    <div id="summary">
+        <div id="mse_change"></div>
+        <div id="diffs"></div>
+    </div>
     <script>
         var img = new Image();
         img.src = "{% url 'graph' graph_id %}"

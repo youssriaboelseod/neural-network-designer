@@ -1,7 +1,8 @@
 body {
+    height: 100%;
     margin-top: 60px;
     background-size: cover;
-    background: linear-gradient(0.25turn, gray, #ebf8e1, gray) no-repeat fixed center;
+    background: linear-gradient(0.25turn, gray, #ebf8e1, gray)  fixed center;
 }
 
 .cont {

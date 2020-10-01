@@ -52,7 +52,7 @@ Main Loop of simulated annealing
 ```
 
 #### Example model structure in PNG format.
-![IMG](model.png)
+![IMG](static/images/model.png)
 ## General Info
 - Every model that is being created or improved for given function is stored using postgres in database and assigned to it's creator ;).
 - Each user before even contemplating on his own neural network could try to search through database for already found solutions to similar problems.
@@ -78,6 +78,8 @@ Main Loop of simulated annealing
 | model passed by user  | random layer insertion  | moving to worse solution in accordance with temperature ( initial T0 )|
 |   | change activation on random layer  |  |
 |   | change neurons quantity on random layer  |  |
+#### Example results
+![IMG](static/images/results_example.png)
 
 ## Installation
 You need to have software for every technology described in [Technologies](#technologies) installed via pip

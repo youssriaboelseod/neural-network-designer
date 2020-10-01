@@ -110,28 +110,35 @@ function is_div(el) {
 }
 
 function get_value(el) {
-    return el.innerHTML.split(':')[1].replace(' ', '')
+    return el.split(':')[1].replace(' ', '')
 }
 
-function calc_diff(x1, x2, txt) {
+function calc_diff(x1, x2, txt,div_id) {
     let par = document.getElementById('diffs')
     let new_it = document.createElement('div')
-    new_it.innerHTML = txt + (parseInt(x1) - parseInt(x2)).toString()
+    new_it.id=div_id
+    let diff = parseInt(x1) - parseInt(x2)
+    new_it.innerHTML = txt + Math.abs(diff).toString()
     par.appendChild(new_it)
-
 }
 
-function compute_diff(t1, t2,c,txt) {
-    let a = document.getElementById(t1);
-    let b = document.getElementById(t2);
-    let x1 = get_value(a.getElementsByClassName(c))
-    let x2 = get_value(b.getElementsByClassName(c))
-    calc_diff(x1,x2,txt)
+function compute_diff(t1, t2, c, txt,div_id) {
+    let a = document.getElementById(t1).childNodes;
+    let b = document.getElementById(t2).childNodes;
+    for (let i = 0; i < a.length; i++) {
+        if (a[i].id === c) {
+            let x1 = get_value(a[i].innerHTML)
+            let x2 = get_value(b[i].innerHTML)
+            calc_diff(x1, x2, txt,div_id)
+            return;
+        }
+    }
+
 }
 
 create_table('initial_details_table', "initial_acts", "initial_neurons")
 create_table('final_details_table', "final_acts", "final_neurons")
 display_mse_change()
-compute_diff('initial_details', 'final_details','n_sum','All neurons used difference: ')
-compute_diff('initial_details', 'final_details','l_quant','Inner Layers quantity diff: ')
+compute_diff('initial_details', 'final_details', 'n_sum', 'All neurons used difference: ','sum_neurs')
+compute_diff('initial_details', 'final_details', 'l_quant', 'Inner Layers quantity diff: ','sum_layers')
 

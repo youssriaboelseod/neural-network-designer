@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+    <table id="result-table">
+        <tr>
+            <td> id</td>
+            <td>{{ query_results.id }}</td>
+        </tr>
+        <tr>
+            <td>Author</td>
+            <td>{{ query_results.creator }}</td>
+        </tr>
+        <tr>
+            <td>
+                Expression
+            </td>
+            <td>
+                {{ query_results.problem }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Activations
+            </td>
+            <td>
+                {{ query_results.activation_list }}
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Neurons
+            </td>
+            <td>
+                {{ query_results.neuron_list }}
+            </td>
+        </tr>
+        <tr>
+            <td>MSE</td>
+            <td>{{ query_results.mse }}</td>
+        </tr>
+    </table>
+    <script>
+        document.body.style.overflow = 'hidden';
+    </script>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/nnb.css' %}">
+
+{% endblock %}

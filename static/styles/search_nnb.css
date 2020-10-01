@@ -1,0 +1,11 @@
+#search-space{
+    position: fixed;
+    top: 9px;
+    right: 20px;
+    z-index: 100000;
+}
+#configuration_table table, td, th, tr {
+    border: solid black 1px;
+    margin: 0 auto;
+    text-align: center;
+}

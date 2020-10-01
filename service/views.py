@@ -83,13 +83,20 @@ def login_request(request):
 
 
 def search_nnb(request):
-    query_results = Graphs.objects.select_related('nnb_id')
+    query_results = Graphs.objects.select_related('nnb_id').order_by('nnb_id__mse')
     if request.POST.get('Find'):
         print(request.POST.get('Func'))
         query_results = Graphs.objects.select_related('nnb_id').filter(nnb_id__problem=request.POST.get('Func'))
     return render(request=request,
                   template_name="search_nnb.html",
                   context={'current_user': request.user, 'query_results': query_results})
+
+
+def load_nnb(request, nnb_id):
+    query_results = NeuralNetworks.objects.filter(id=nnb_id).first()
+    print(query_results.id)
+    return render(request=request,
+                  template_name="nnb.html", context={'query_results': query_results})
 
 
 def create_nnb(request):

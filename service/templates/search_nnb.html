@@ -1,15 +1,16 @@
 {% extends 'base.html' %}
 {% load static %}
 {% block content %}
-    <form method='post' action='#'>
-        {% csrf_token %}
-        <label> Expression:
-            <input type="text" name="Func">
-        </label>
-        <input type="submit" value="Find" name="Find">
-    </form>
+    {% csrf_token %}
+    <div id="search-space">
+        <form method='post' action='#'>
+            <input type="text" value="Expression" onfocus="if (this.value=='Expression') this.value = ''" name="Func">
+            <input type="submit" value="Find" name="Find">
+        </form>
+    </div>
     <table id="my-table">
         <tr>
+            <th>Neural Network ID</th>
             <th>Creator</th>
             <th>Expression</th>
             <th>Activations</th>
@@ -19,6 +20,7 @@
         </tr>
         {% for item in query_results %}
             <tr>
+                <td><a href="{% url 'nnb' item.nnb_id.id %}">Check {{ item.id }}</a></td>
                 <td>{{ item.nnb_id.creator }}</td>
                 <td>{{ item.nnb_id.problem }}</td>
                 <td>{{ item.nnb_id.activation_list }}</td>
@@ -32,5 +34,5 @@
     </table>
     <script>
     </script>
-    <link rel="stylesheet" type="text/css" href="{% static 'styles/result.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/search_nnb.css' %}">
 {% endblock %}

@@ -4,6 +4,7 @@
     width: 120px;
     height: 40px;
 }
+
 #loading_bag {
     z-index: -1;
     top: 45%;
@@ -11,6 +12,7 @@
     height: 300px;
     width: 100%;
 }
+
 .loader {
     margin: 0 auto;
     display: flex;

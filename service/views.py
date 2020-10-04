@@ -10,7 +10,7 @@ from django.template import loader
 
 from backend.nnb import *
 from backend.tools import *
-from polls.models import NeuralNetworks
+from service.models import NeuralNetworks
 
 
 def index(request):

@@ -35,7 +35,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'polls'
+    'service'
 ]
 
 MIDDLEWARE = [
@@ -53,7 +53,7 @@ ROOT_URLCONF = 'neural-network-designer.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'polls/templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'service/templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {

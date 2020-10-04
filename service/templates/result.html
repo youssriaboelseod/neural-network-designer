@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% csrf_token %}
+
+    <h1>Config</h1>
+    <ul>
+        <li>{{ data.initial_temperature }}</li>
+        <li>{{ data.scale }}</li>
+        <li>{{ data.epochs }}</li>
+        <li>{{ data.resets }}</li>
+        <li>{{ data.time }}</li>
+        <li>{{ data.linspace }}</li>
+        <li>{{ data.expression }}</li>
+    </ul>
+    <hr>
+
+    <h1>Initial Model</h1>
+    <ul>
+        <li>{{ data.initial_activations }}</li>
+        <li>{{ data.initial_neurons }}</li>
+        <li>{{ data.first_mse }}</li>
+    </ul>
+    <hr>
+
+
+    <h1>Results</h1>
+    <ul>
+        <li> {{ data.best_activations }}</li>
+        <li> {{ data.best_neurons }}</li>
+        <li> {{ data.best_mse }}</li>
+    </ul>
+{% endblock %}

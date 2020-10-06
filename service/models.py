@@ -24,3 +24,4 @@ class Graphs(models.Model):
     xplot = ArrayField(models.FloatField(null=True, blank=True), null=True, blank=True)
     yplot = ArrayField(models.FloatField(null=True, blank=True), null=True, blank=True)
     yhatplot = ArrayField(models.FloatField(null=True, blank=True), null=True, blank=True)
+    initial_yhatplot = ArrayField(models.FloatField(null=True, blank=True), null=True, blank=True)

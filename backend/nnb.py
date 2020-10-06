@@ -106,7 +106,7 @@ class NeuralNetworkDesigner:
         mse = np.nan_to_num(mean_squared_error(np.nan_to_num(y_plot), np.nan_to_num(yhat_plot)))
         plot_png_network(model)
         draw_graph(x_plot, y_plot, yhat_plot, mse)
-
+        self.data['initial_yhat'] = yhat_plot
         best_mse = mse
         self.data['first_mse'] = copy.deepcopy(mse)
         print(best_mse)

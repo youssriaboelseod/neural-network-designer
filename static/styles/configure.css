@@ -1,4 +1,11 @@
+#build {
+    position: center;
+    z-index: 120;
+    width: 120px;
+    height: 40px;
+}
 #loading_bag {
+    z-index: -1;
     top: 45%;
     position: absolute;
     height: 300px;

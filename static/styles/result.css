@@ -1,0 +1,30 @@
+#configuration_table {
+    width: 80%;
+    background-color: rgb(255, 255, 255, 0.3);
+}
+
+#configuration_table table, td, th, tr {
+    border: solid black 1px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+
+#img_home {
+    position: relative;
+}
+
+img {
+    margin: 0 auto;
+    display: block;
+}
+
+.row {
+    display: flex;
+}
+
+.col {
+    flex: 1;
+    padding: 1em;
+    border: solid;
+}

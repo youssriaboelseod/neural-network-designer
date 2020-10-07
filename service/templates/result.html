@@ -1,40 +1,64 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
     {% csrf_token %}
 
-    <h1>Config</h1>
-    <p><a href="{% url 'graph' graph_id %}">See graph!</a></p>
-    <div id="img_home"></div>
-    <ul>
-        <li>{{ graph_id }}</li>
-        <li>{{ data.initial_temperature }}</li>
-        <li>{{ data.scale }}</li>
-        <li>{{ data.epochs }}</li>
-        <li>{{ data.resets }}</li>
-        <li>{{ data.time }}</li>
-        <li>{{ data.linspace }}</li>
-        <li>{{ data.expression }}</li>
-    </ul>
+    <h1>f(x) = {{ data.expression }}</h1>
+    <table id="configuration_table">
+        <tr>
+            <td><b>[Linspace] Explore realm: </b> {{ data.linspace }}</td>
+            <td rowspan="8" style="background-color: white">
+                <div id="img_home"></div>
+            </td>
+        </tr>
+        <tr>
+            <td><b>Graph ID:</b> {{ graph_id }}</td>
+        </tr>
+        <tr>
+            <td><b>Initial Temperature: </b>{{ data.initial_temperature }}</td>
+        </tr>
+        <tr>
+            <td><b>Scaling speed:</b> {{ data.scale }}</td>
+        </tr>
+        <tr>
+            <td><b>Epochs to study:</b> {{ data.epochs }}</td>
+        </tr>
+        <tr>
+            <td><b>Resets: </b> {{ data.resets }}</td>
+        </tr>
+        <tr>
+            <td><b>Working Time: </b>{{ data.time }} <b>seconds</b></td>
+        </tr>
+        <tr>
+            <td><b>Random Model: </b>{{ data.random_model }} </td>
+        </tr>
+    </table>
+
     <hr>
-
-    <h1>Initial Model</h1>
-    <ul>
-        <li>{{ data.initial_activations }}</li>
-        <li>{{ data.initial_neurons }}</li>
-        <li>{{ data.first_mse }}</li>
-    </ul>
+    <div class="row">
+        <div class="col">
+            <h1>Initial Model Details</h1>
+            <div id="initial_acts" style="display: none"> {{ data.initial_activations }}</div>
+            <div id="initial_neurons" style="display: none"> {{ data.initial_neurons }}</div>
+            <div id="initial_mse">Initial MSE: {{ data.first_mse }}</div>
+            <div id="initial_details_table"></div>
+        </div>
+        <div class="col">
+            <h1>Final Model Details</h1>
+            <div id="final_acts" style="display: none"> {{ data.best_activations }}</div>
+            <div id="final_neurons" style="display: none"> {{ data.best_neurons }}</div>
+            <div id="final_mse">Final MSE: {{ data.best_mse }}</div>
+            <div id="final_details_table"></div>
+        </div>
+    </div>
     <hr>
-
-
-    <h1>Results</h1>
-    <ul>
-        <li> {{ data.best_activations }}</li>
-        <li> {{ data.best_neurons }}</li>
-        <li> {{ data.best_mse }}</li>
-    </ul>
+    <h1>Summary</h1>
+    <div id="mse_change"></div>
     <script>
         var img = new Image();
         img.src = "{% url 'graph' graph_id %}"
         img_home.appendChild(img);
     </script>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/result.css' %}">
+    <script src="{% static 'result.js' %}"></script>
 {% endblock %}

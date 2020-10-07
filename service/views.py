@@ -94,18 +94,20 @@ def search_nnb(request):
 def create_nnb(request):
     if request.POST.get('build'):
         expr, ls, t, initial_temp, scale, rs_step, neurons, acts = get_parameters_configuration(request)
-        neurons, acts = choose_model_creation(acts, neurons)
+        neurons, acts, rnd_model = choose_model_creation(acts, neurons)
         new_nnb = NeuralNetworkDesigner(neurons, acts, ls, translate_pythonic(expr))
+        new_nnb.data['random_model'] = rnd_model
         setup_initial_parameters(new_nnb, scale, initial_temp, rs_step)
-        print(neurons, acts)
         res = new_nnb.simulated_annealing(t) if len(
             rs_step) == 0 and not rs_step.isdigit() else new_nnb.simulated_annealing(t, step_limit=int(rs_step))
         new_record = NeuralNetworks(creator=request.user, problem=normalize_pythonic(expr), mse=res[0],
                                     neuron_list=res[1], activation_list=res[2])
         new_record.save()
         xp, yp, yhp = new_nnb.data['x_plot'], new_nnb.data['y_plot'], new_nnb.data['yhat_plot']
+        ixp, iyhp = new_nnb.data['initial_xplot'], new_nnb.data['initial_yhat']
         graphs_record = Graphs(nnb_id=new_record, xplot=list(xp.flatten()), yplot=list(yp.flatten()),
-                               yhatplot=list(yhp.flatten()))
+                               yhatplot=list(yhp.flatten()), initial_yhatplot=list(iyhp.flatten()),
+                               initial_xplot=list(ixp.flatten()))
         graphs_record.save()
         print(new_nnb.data['best_neurons'], new_nnb.data['best_activations'])
         return render(request=request,
@@ -119,12 +121,15 @@ def create_nnb(request):
 def grafico(request, graph_id):
     query_results = Graphs.objects.all()
     query_results = query_results.filter(id=graph_id).first()
-    pyplot.scatter(query_results.xplot, query_results.yplot, label='Actual')
-    pyplot.scatter(query_results.xplot, query_results.yhatplot, label='Predicted')
-    print(query_results.xplot)
-    print(query_results.yplot)
-    print(query_results.yhatplot)
-    # pyplot.title('MSE: %.3f' % mse)
+    fig, axs = pyplot.subplots(2, 1)
+    size = 0.6
+    axs[1].scatter(query_results.xplot, query_results.yplot, label='Actual', s=size)
+    axs[1].scatter(query_results.xplot, query_results.yhatplot, label='Predicted', s=size)
+    axs[1].set_title('Final model')
+    axs[0].scatter(query_results.xplot, query_results.yplot, label='Actual', s=size)
+    axs[0].scatter(query_results.initial_xplot, query_results.initial_yhatplot, label='Predicted', s=size)
+    axs[0].set_title('Initial model')
+
     buffer = io.BytesIO()
     canvas = pylab.get_current_fig_manager().canvas
     canvas.draw()
@@ -135,15 +140,17 @@ def grafico(request, graph_id):
 
 
 def choose_model_creation(acts, neurons):
+    random_flag = True
     if len(acts.split(',')) != 0 and len(acts.split(',')) == len(neurons.split(',')):
         try:
             neurons, acts = [int(x) for x in neurons.split(',')], [str(x) for x in acts.split(',')]
-            return neurons, acts
+            random_flag = False
         except ValueError:
             neurons, acts = get_random_model_scheme()
+
     else:
         neurons, acts = get_random_model_scheme()
-    return neurons, acts
+    return neurons, acts, random_flag
 
 
 def setup_initial_parameters(new_nnb, scale, initial_temp, rs_step):

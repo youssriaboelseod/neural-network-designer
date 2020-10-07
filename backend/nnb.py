@@ -91,7 +91,7 @@ class NeuralNetworkDesigner:
         yhat_plot = self.scale_y.inverse_transform(yhat)
         return yhat_plot, x_plot, y_plot
 
-    def simulated_annealing(self, t, save_structure=True, graph=True, step_limit=300000):
+    def simulated_annealing(self, t, save_structure=True, graph=False, step_limit=300000):
         self.data['time'] = t
         wh = get_millis(int(t))
         end_time = get_time() + wh
@@ -107,6 +107,7 @@ class NeuralNetworkDesigner:
         plot_png_network(model)
         draw_graph(x_plot, y_plot, yhat_plot, mse)
         self.data['initial_yhat'] = yhat_plot
+        self.data['initial_xplot'] = x_plot
         best_mse = mse
         self.data['first_mse'] = copy.deepcopy(mse)
         print(best_mse)

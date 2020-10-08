@@ -1,24 +1,36 @@
 {% extends 'base.html' %}
+{% load static %}
 {% block content %}
     <form method='post' action='#'>
         {% csrf_token %}
-        <input type="text" value="x**2-5*x+1" name="Func">
+        <label> Expression:
+            <input type="text" name="Func">
+        </label>
         <input type="submit" value="Find" name="Find">
     </form>
-    <table>
+    <table id="my-table">
         <tr>
-            <th>Field creator</th>
-            <th>Field problem</th>
-            <th>Field activation_list</th>
-            <th>Field neuron_list</th>
+            <th>Creator</th>
+            <th>Expression</th>
+            <th>Activations</th>
+            <th>Neurons</th>
+            <th>MSE</th>
+            <th>Graph visualisation</th>
         </tr>
         {% for item in query_results %}
             <tr>
-                <td>{{ item.creator }}</td>
-                <td>{{ item.problem }}</td>
-                <td>{{ item.activation_list }}</td>
-                <td>{{ item.neuron_list }}</td>
+                <td>{{ item.nnb_id.creator }}</td>
+                <td>{{ item.nnb_id.problem }}</td>
+                <td>{{ item.nnb_id.activation_list }}</td>
+                <td>{{ item.nnb_id.neuron_list }}</td>
+                <td>{{ item.nnb_id.mse }}</td>
+                <td>
+                    <a href="{% url 'graph' item.id %}">See graph {{ item.id }}</a>
+                </td>
             </tr>
         {% endfor %}
     </table>
+    <script>
+    </script>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles/result.css' %}">
 {% endblock %}

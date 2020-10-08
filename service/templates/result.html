@@ -12,7 +12,7 @@
             </td>
         </tr>
         <tr>
-            <td><b>Graph ID:</b> {{ graph_id }}</td>
+            <td><b>Graph ID:</b> <a href="{% url 'graph' graph_id %}">{{ graph_id }}</a></td>
         </tr>
         <tr>
             <td><b>Initial Temperature: </b>{{ data.initial_temperature }}</td>

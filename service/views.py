@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.db import connection
 from django.http import HttpResponse
 from django.shortcuts import redirect, render
 from django.template import loader
@@ -82,10 +83,10 @@ def login_request(request):
 
 
 def search_nnb(request):
-    query_results = NeuralNetworks.objects.all()
+    query_results = Graphs.objects.select_related('nnb_id')
     if request.POST.get('Find'):
         print(request.POST.get('Func'))
-        query_results = NeuralNetworks.objects.filter(problem=request.POST.get('Func'))
+        query_results = Graphs.objects.select_related('nnb_id').filter(nnb_id__problem=request.POST.get('Func'))
     return render(request=request,
                   template_name="search_nnb.html",
                   context={'current_user': request.user, 'query_results': query_results})

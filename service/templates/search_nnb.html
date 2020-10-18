@@ -4,6 +4,7 @@
     {% csrf_token %}
     <div id="search-space">
         <form method='post' action='#'>
+            {% csrf_token %}
             <input type="text" value="Expression" onfocus="if (this.value=='Expression') this.value = ''" name="Func">
             <input type="submit" value="Find" name="Find">
         </form>

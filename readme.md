@@ -61,7 +61,7 @@ Main Loop of simulated annealing
 
 ## How it works?
  Application is created to design neural networks what in fact is a large part of artificial intelligence.
-  This program were developed to help and improve AI results using computational intelligence, exactly metaheuristic algorithms.
+  Program had been developed to help and improve NN results quality using computational intelligence, exactly metaheuristic algorithms.
  To improve or even create new networks I have used algorithm- simulated annealing( SA). But how does it really work ?
  So it is an algorithm based on initial solution that in given time trying to improve it, by mutating model structure.
   If we already have some model that is good, but results are not enough for us, we can input that model as initial and 
@@ -116,69 +116,6 @@ To run application you just have to connect project with postgres database and r
 - Numpy
 - Matplotlib
 - Graphviz
-### Requirements
-- absl-py==0.9.0
-- asgiref==3.2.10
-- astunparse==1.6.3
-- cachetools==4.1.0
-- certifi==2020.6.20
-- chardet==3.0.4
-- cycler==0.10.0
-- decorator==4.4.2
-- Django==3.0.8
-- gast==0.3.3
-- google-auth==1.18.0
-- google-auth-oauthlib==0.4.1
-- google-pasta==0.2.0
-- graphviz==0.14
-- grpcio==1.29.0
-- h5py==2.10.0
-- idna==2.9
-- imageio==2.8.0
-- joblib==0.15.1
-- Keras==2.4.3
-- Keras-Preprocessing==1.1.2
-- keras-vis==0.4.1
-- kiwisolver==1.2.0
-- Markdown==3.2.2
-- matplotlib==3.2.2
-- networkx==2.4
-- numpy==1.19.0
-- oauthlib==3.1.0
-- opt-einsum==3.2.1
-- Pillow==7.2.0
-- protobuf==3.12.2
-- psycopg2-binary==2.8.5
-- pyasn1==0.4.8
-- pyasn1-modules==0.2.8
-- pydotplus==2.0.2
-- pyparsing==2.4.7
-- python-dateutil==2.8.1
-- pytz==2020.1
-- PyWavelets==1.1.1
-- PyYAML==5.3.1
-- requests==2.24.0
-- requests-oauthlib==1.3.0
-- rsa==4.6
-- scikit-image==0.17.2
-- scikit-learn==0.23.1
-- scipy==1.4.1
-- six==1.15.0
-- sqlparse==0.3.1
-- tensorboard==2.2.2
-- tensorboard-plugin-wit==1.6.0.post3
-- tensorflow-estimator==2.2.0
-- tensorflow-gpu==2.2.0
-- termcolor==1.1.0
-- threadpoolctl==2.1.0
-- tifffile==2020.7.4
-- urllib3==1.25.9
-- vis==0.0.5
-- Werkzeug==1.0.1
-- wrapt==1.12.1
-
-
-
 
 ## License
 Open- Source
